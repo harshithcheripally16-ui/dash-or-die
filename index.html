@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dash or Die | Premium Arcade Survivor</title>
+    <meta name="description" content="A high-octane 2D dash survivor game with premium aesthetics. Burst through the void and survive the sync crisis.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div id="vignette" class="warning-vignette"></div>
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen-overlay">
+            <div class="screen-content">
+                <p class="stat-label">System Initialization</p>
+                <h1 class="game-title">DASH <span class="accent">OR</span> DIE</h1>
+                <p class="stat-label" style="margin-bottom: 2rem;">Arcade Survivor Link: DISCONNECTED</p>
+                <button id="start-btn" class="premium-btn">INITIALIZE LINK</button>
+            </div>
+        </div>
+
+        <div class="ui-overlay">
+            <div class="stat-module">
+                <p class="stat-label">System State</p>
+                <div class="stat-value">OPERATIONAL</div>
+                <div class="cooldown-container">
+                    <div id="cooldown-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-module">
+            <p class="stat-label">Sync Index</p>
+            <h1 class="stat-value" id="score-value">0</h1>
+            <p class="stat-label high-score-label">Peak Stability: <span id="high-score-value">0</span></p>
+        </div>
+
+        <div class="instructions">
+            Press <span class="accent">WASD</span> to DASH through the void
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over" class="screen-overlay" style="display: none;">
+            <div class="screen-content">
+                <p class="stat-label" style="color: #ef4444;">System Failure</p>
+                <h1 class="game-over-title">DE-SYNCED</h1>
+                <div class="final-score-container">
+                    <p class="stat-label">Final Sync Index</p>
+                    <h2 id="final-score-val" class="stat-value" style="font-size: 3rem;">0</h2>
+                </div>
+                <button id="restart-btn" class="premium-btn" style="margin-top: 2rem;">RE-LINK SYSTEM</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js" defer></script>
+</body>
+</html>
