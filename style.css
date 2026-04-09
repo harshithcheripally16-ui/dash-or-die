@@ -308,3 +308,85 @@ body {
   100% { transform: scale(1); }
 }
 
+/* Mobile Controls */
+.joystick-boundary {
+  position: absolute;
+  bottom: calc(3rem + env(safe-area-inset-bottom));
+  left: calc(3rem + env(safe-area-inset-left));
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.joystick-boundary.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#joystick-base {
+  width: 110px;
+  height: 110px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+#joystick-knob {
+  width: 55px;
+  height: 55px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  position: absolute;
+  box-shadow: 0 0 25px var(--accent-glow);
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.mobile-surge-btn {
+  position: absolute;
+  bottom: calc(4rem + env(safe-area-inset-bottom));
+  right: calc(4rem + env(safe-area-inset-right));
+  width: 90px;
+  height: 90px;
+  background: rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid var(--accent-color);
+  border-radius: 50%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mobile-surge-btn:active {
+  transform: scale(0.85) !important;
+  background: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 50px var(--accent-color);
+}
+
+/* Responsiveness for smaller height screens */
+@media (max-height: 500px) {
+  .joystick-boundary { bottom: 1rem; left: 1rem; width: 120px; height: 120px; }
+  #joystick-base { width: 80px; height: 80px; }
+  #joystick-knob { width: 40px; height: 40px; }
+  .mobile-surge-btn { bottom: 1.5rem; right: 2rem; width: 70px; height: 70px; }
+}

@@ -5,16 +5,20 @@ const ctx = canvas ? canvas.getContext('2d') : null;
 const player = {
     x: 0,
     y: 0,
-    size: 40,
+    size: 32,
     color: '#8b5cf6',
+    walkSpeed: 1.8,
+    walkFriction: 0.82,
+    maxWalkSpeed: 6.5,
     dashVelocity: { x: 0, y: 0 },
-    dashSpeedInitial: 40,
-    dashDecay: 0.82,
-    dashMinVelocity: 2,
+    dashSpeedInitial: 38,
+    dashDecay: 0.84,
+    dashMinVelocity: 3.0,
     isDashing: false,
-    dashCooldown: 300,
+    dashCooldown: 400,
     lastDashTime: 0,
     angle: 0,
+    lastDirection: { x: 1, y: 0 },
     trail: [],
     particles: []
 };
@@ -32,6 +36,11 @@ const effects = {
 };
 
 const keys = {};
+const touchState = {
+    active: false,
+    origin: { x: 0, y: 0 },
+    vector: { x: 0, y: 0 }
+};
 
 // States
 const STATE = {
@@ -82,9 +91,6 @@ function init() {
                 startGame();
                 return;
             }
-            if (gameState === STATE.PLAYING && !keys[e.code]) {
-                handleDashInput(e.code);
-            }
             keys[e.code] = true;
         } catch (err) {
             console.error("Input processing failure:", err);
@@ -93,7 +99,88 @@ function init() {
 
     window.addEventListener('keyup', (e) => keys[e.code] = false);
     
+    // Mobile Touch Event Listeners
+    setupTouchListeners();
+
+    // Prevent stuck movement on tab switch
+    window.addEventListener('blur', clearInputs);
+    
     gameLoop();
+}
+
+function clearInputs() {
+    for (let key in keys) keys[key] = false;
+    touchState.active = false;
+    touchState.vector = { x: 0, y: 0 };
+    const joystickContainer = document.getElementById('joystick-container');
+    const joystickKnob = document.getElementById('joystick-knob');
+    if (joystickContainer) joystickContainer.classList.remove('active');
+    if (joystickKnob) joystickKnob.style.transform = `translate(0px, 0px)`;
+}
+
+function setupTouchListeners() {
+    const joystickContainer = document.getElementById('joystick-container');
+    const joystickKnob = document.getElementById('joystick-knob');
+    const surgeBtn = document.getElementById('surge-btn');
+
+    window.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        // Only trigger joystick on the left half of the screen
+        if (touch.clientX < window.innerWidth / 2) {
+            touchState.active = true;
+            touchState.origin = { x: touch.clientX, y: touch.clientY };
+            
+            joystickContainer.style.left = `${touch.clientX - 75}px`;
+            joystickContainer.style.bottom = `${window.innerHeight - touch.clientY - 75}px`;
+            joystickContainer.classList.add('active');
+        }
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!touchState.active) return;
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchState.origin.x;
+        const dy = touch.clientY - touchState.origin.y;
+        const dist = Math.hypot(dx, dy);
+        const maxDist = 50;
+        
+        const ratio = Math.min(dist, maxDist) / maxDist;
+        const angle = Math.atan2(dy, dx);
+        
+        touchState.vector = {
+            x: Math.cos(angle) * ratio,
+            y: Math.sin(angle) * ratio
+        };
+        
+        const knobX = Math.cos(angle) * Math.min(dist, maxDist);
+        const knobY = Math.sin(angle) * Math.min(dist, maxDist);
+        joystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
+    });
+
+    window.addEventListener('touchend', (e) => {
+        // Only clear if no touches remain to prevent multi-touch glitches
+        if (e.touches.length === 0) {
+            touchState.active = false;
+            touchState.vector = { x: 0, y: 0 };
+            joystickContainer.classList.remove('active');
+            joystickKnob.style.transform = `translate(0px, 0px)`;
+        }
+    });
+
+    // Touch Cancel (interrupted by phone call, etc)
+    window.addEventListener('touchcancel', clearInputs);
+
+    if (surgeBtn) {
+        surgeBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameState === STATE.PLAYING) {
+                const triggerNow = Date.now();
+                if (triggerNow - player.lastDashTime > player.dashCooldown && !player.isDashing) {
+                    startDash(player.lastDirection.x, player.lastDirection.y);
+                }
+            }
+        });
+    }
 }
 
 function startGame() {
@@ -189,6 +276,7 @@ function resizeCanvas() {
 
 // Update logic
 function update() {
+    const now = Date.now();
     if (gameState !== STATE.PLAYING) {
         // Subtle decay still active
         effects.shake.intensity *= 0.9;
@@ -208,7 +296,6 @@ function update() {
     effects.flash *= 0.85;
 
     // Enemy Spawning
-    const now = Date.now();
     if (now - lastSpawnTime > spawnRate) {
         spawnEnemy();
         lastSpawnTime = now;
@@ -216,7 +303,70 @@ function update() {
         spawnRate = Math.max(minSpawnRate, spawnRate * 0.97);
     }
 
-    // Dash velocity update
+    // Combined Movement Logic (Keyboard + Touch)
+    let moveDirX = 0;
+    let moveDirY = 0;
+    
+    if (touchState.active) {
+        moveDirX = touchState.vector.x;
+        moveDirY = touchState.vector.y;
+    } else {
+        if (keys['KeyW'] || keys['ArrowUp']) moveDirY -= 1;
+        if (keys['KeyS'] || keys['ArrowDown']) moveDirY += 1;
+        if (keys['KeyA'] || keys['ArrowLeft']) moveDirX -= 1;
+        if (keys['KeyD'] || keys['ArrowRight']) moveDirX += 1;
+    }
+
+    if (moveDirX !== 0 || moveDirY !== 0) {
+        // Normalize directional input (Touch vector is already normalized-ish by ratio)
+        const mag = Math.hypot(moveDirX, moveDirY);
+        const ux = moveDirX / mag;
+        const uy = moveDirY / mag;
+        
+        // Use mag for analog-like movement on touch, otherwise 1.0 for keyboard
+        const inputStrength = touchState.active ? mag : 1.0;
+        
+        player.walkVelocity.x += ux * player.walkSpeed * inputStrength;
+        player.walkVelocity.y += uy * player.walkSpeed * inputStrength;
+        
+        // Store last movement vector for 360-degree dashing
+        player.lastDirection = { x: ux, y: uy };
+        
+        // Face movement direction smoothly
+        if (!player.isDashing) {
+            const targetAngle = Math.atan2(uy, ux);
+            let diff = targetAngle - player.angle;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            player.angle += diff * 0.2;
+        }
+    }
+
+    // Apply Friction
+    player.walkVelocity.x *= player.walkFriction;
+    player.walkVelocity.y *= player.walkFriction;
+
+    // Cap Walk Speed
+    const currentWalkSpeed = Math.hypot(player.walkVelocity.x, player.walkVelocity.y);
+    if (currentWalkSpeed > player.maxWalkSpeed) {
+        player.walkVelocity.x = (player.walkVelocity.x / currentWalkSpeed) * player.maxWalkSpeed;
+        player.walkVelocity.y = (player.walkVelocity.y / currentWalkSpeed) * player.maxWalkSpeed;
+    }
+
+    // Apply Walking Position
+    player.x += player.walkVelocity.x;
+    player.y += player.walkVelocity.y;
+
+    // Dash Trigger (Space)
+    if (keys['Space'] && now - player.lastDashTime > player.dashCooldown && !player.isDashing) {
+        // Dash in current movement direction or last direction if stationary
+        const dashX = (moveDirX === 0 && moveDirY === 0) ? player.lastDirection.x : moveDirX;
+        const dashY = (moveDirX === 0 && moveDirY === 0) ? player.lastDirection.y : moveDirY;
+        
+        startDash(dashX, dashY);
+    }
+
+    // Dash Velocity Update
     if (player.isDashing) {
         player.x += player.dashVelocity.x;
         player.y += player.dashVelocity.y;
@@ -224,8 +374,8 @@ function update() {
         player.dashVelocity.x *= player.dashDecay;
         player.dashVelocity.y *= player.dashDecay;
 
-        const currentSpeed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
-        if (currentSpeed < player.dashMinVelocity) {
+        const currentDashSpeed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
+        if (currentDashSpeed < player.dashMinVelocity) {
             player.isDashing = false;
             player.dashVelocity = { x: 0, y: 0 };
         }
@@ -445,11 +595,11 @@ function draw() {
     // Draw Player with Smear & Stretch Effect
     ctx.save();
     ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
+    ctx.rotate(player.angle);
     
     if (player.isDashing) {
         const speed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
         const stretch = 1 + speed / 40;
-        ctx.rotate(player.angle);
         
         // Draw Smear (Neon Trail)
         for (let i = 0; i < 4; i++) {
