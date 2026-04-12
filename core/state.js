@@ -13,6 +13,7 @@ export const state = {
         color: '#8b5cf6',
         theme: 'dark'
     },
+    mousePos: { x: 0, y: 0 },
     timeScale: 1.0,
     dyingProgress: 0,
     score: 0,

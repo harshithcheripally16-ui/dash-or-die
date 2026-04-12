@@ -151,22 +151,21 @@ function update() {
 
     const dt = state.timeScale;
 
-    let moveDirX = 0;
-    let moveDirY = 0;
+    let forward = false;
+    let backward = false;
     
     if (state.gameState === STATE.PLAYING) {
         if (state.touchState.active) {
-            moveDirX = state.touchState.vector.x;
-            moveDirY = state.touchState.vector.y;
+            // Joystick vertical deflection maps to forward/backward
+            if (state.touchState.vector.y < -0.2) forward = true;
+            if (state.touchState.vector.y > 0.2) backward = true;
         } else {
-            if (state.keys['KeyW'] || state.keys['ArrowUp']) moveDirY -= 1;
-            if (state.keys['KeyS'] || state.keys['ArrowDown']) moveDirY += 1;
-            if (state.keys['KeyA'] || state.keys['ArrowLeft']) moveDirX -= 1;
-            if (state.keys['KeyD'] || state.keys['ArrowRight']) moveDirX += 1;
+            if (state.keys['KeyW'] || state.keys['ArrowUp']) forward = true;
+            if (state.keys['KeyS'] || state.keys['ArrowDown']) backward = true;
         }
     }
 
-    updatePlayerMovement(now, moveDirX * dt, moveDirY * dt);
+    updatePlayerMovement(now, forward, backward);
     updatePlayerEffects();
     
     // Scale existing update systems by dt inside their logic or here

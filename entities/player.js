@@ -123,25 +123,28 @@ export function triggerVoidBurst(x, y) {
     }
 }
 
-export function updatePlayerMovement(now, moveDirX, moveDirY) {
-    if (moveDirX !== 0 || moveDirY !== 0) {
-        const mag = Math.hypot(moveDirX, moveDirY);
-        const ux = moveDirX / mag;
-        const uy = moveDirY / mag;
+export function updatePlayerMovement(now, forwardInput, backwardInput) {
+    // 1. Rotation Logic (Face Mouse)
+    const centerX = player.x + player.size / 2;
+    const centerY = player.y + player.size / 2;
+    const targetAngle = Math.atan2(state.mousePos.y - centerY, state.mousePos.x - centerX);
+    
+    // Smooth rotation lerp
+    let diff = targetAngle - player.angle;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    player.angle += diff * 0.15; // Smooth face
+
+    // 2. Locomotion Logic (W/S Forward/Backward)
+    const moveDir = forwardInput ? 1 : (backwardInput ? -1 : 0);
+    
+    if (moveDir !== 0) {
+        const ux = Math.cos(player.angle);
+        const uy = Math.sin(player.angle);
         
-        const inputStrength = state.touchState.active ? mag : 1.0;
-        
-        player.walkVelocity.x += ux * player.walkSpeed * inputStrength;
-        player.walkVelocity.y += uy * player.walkSpeed * inputStrength;
+        player.walkVelocity.x += ux * player.walkSpeed * moveDir;
+        player.walkVelocity.y += uy * player.walkSpeed * moveDir;
         player.lastDirection = { x: ux, y: uy };
-        
-        if (!player.isDashing) {
-            const targetAngle = Math.atan2(uy, ux);
-            let diff = targetAngle - player.angle;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            player.angle += diff * 0.2;
-        }
     }
 
     // Apply Friction & Caps
@@ -159,9 +162,8 @@ export function updatePlayerMovement(now, moveDirX, moveDirY) {
 
     // Dash Trigger (Space)
     if (state.keys['Space'] && now - player.lastDashTime > player.dashCooldown && !player.isDashing) {
-        const dashX = (moveDirX === 0 && moveDirY === 0) ? player.lastDirection.x : moveDirX;
-        const dashY = (moveDirX === 0 && moveDirY === 0) ? player.lastDirection.y : moveDirY;
-        startDash(dashX, dashY);
+        // Dash always follows the current facing angle
+        startDash(Math.cos(player.angle), Math.sin(player.angle));
     }
 
     // Dash processing
