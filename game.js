@@ -216,6 +216,9 @@ function startGame() {
     
     const inst = document.getElementById('game-instructions');
     if (inst) inst.innerHTML = '<span class="accent">WASD</span> to MOVE | <span class="accent">SPACE</span> to DASH';
+    
+    // Spawn first wave immediately
+    spawnEnemy();
 }
 
 function showScreen(id) {
@@ -696,9 +699,10 @@ function draw() {
 
 function drawGrid() {
     const gridSize = 50;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
 
+    // Static Grid (Does not move with player)
     for (let x = 0; x < canvas.width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -711,6 +715,17 @@ function drawGrid() {
         ctx.lineTo(canvas.width, y);
         ctx.stroke();
     }
+
+    // Arena Boundary (Visual Confined Space)
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+    
+    // Glowing corners
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#8b5cf6';
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    ctx.shadowBlur = 0;
 }
 
 function gameLoop() {
