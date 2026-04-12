@@ -84,12 +84,8 @@ function init() {
 
     window.addEventListener('keydown', (e) => {
         try {
-            if (gameState === STATE.GAMEOVER && e.code === 'Enter') {
-                resetGame();
-                startGame();
-                return;
-            }
-            if (gameState === STATE.START && e.code === 'Enter') {
+            if ((gameState === STATE.START || gameState === STATE.GAMEOVER) && (e.code === 'Enter' || e.code === 'Space')) {
+                if (gameState === STATE.GAMEOVER) resetGame();
                 startGame();
                 return;
             }
@@ -190,16 +186,27 @@ function startGame() {
     gameState = STATE.PLAYING;
     hideScreens();
     lastSpawnTime = Date.now();
+    
+    const inst = document.getElementById('game-instructions');
+    if (inst) inst.innerHTML = '<span class="accent">WASD</span> to MOVE | <span class="accent">SPACE</span> to DASH';
 }
 
 function showScreen(id) {
     hideScreens();
-    document.getElementById(id).style.display = 'flex';
+    const screen = document.getElementById(id);
+    if (screen) {
+        screen.style.display = 'flex';
+        screen.style.opacity = '1';
+        screen.style.visibility = 'visible';
+    }
 }
 
 function hideScreens() {
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
+    
+    const inst = document.getElementById('game-instructions');
+    if (inst) inst.innerHTML = 'Press <span class="accent">SPACE</span> or <span class="accent">ENTER</span> to INITIALIZE LINK';
 }
 
 function resetGame() {
@@ -686,10 +693,5 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-window.onload = () => {
-    try {
-        init();
-    } catch (criticalError) {
-        console.error("CRITICAL SYSTEM FAILURE:", criticalError);
-    }
-};
+// Immediate initialization (script is deferred)
+init();
