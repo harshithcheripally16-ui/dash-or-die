@@ -9,6 +9,7 @@ const player = {
     walkSpeed: 1.8,
     walkFriction: 0.82,
     maxWalkSpeed: 6.5,
+    walkVelocity: { x: 0, y: 0 },
     dashVelocity: { x: 0, y: 0 },
     dashSpeedInitial: 38,
     dashDecay: 0.84,
