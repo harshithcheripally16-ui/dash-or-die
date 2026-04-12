@@ -5,13 +5,6 @@ export function setupInput(callbacks) {
 
     window.addEventListener('keydown', (e) => {
         try {
-            const isControlKey = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter'].includes(e.code);
-            
-            if ((state.gameState === STATE.START || state.gameState === STATE.GAMEOVER) && isControlKey) {
-                if (state.gameState === STATE.GAMEOVER && onReset) onReset();
-                if (onStart) onStart();
-                return;
-            }
             state.keys[e.code] = true;
         } catch (err) {
             console.error("Input processing failure:", err);
@@ -35,10 +28,6 @@ function setupTouchListeners(onStart) {
     const surgeBtn = document.getElementById('surge-btn');
 
     window.addEventListener('touchstart', (e) => {
-        if (state.gameState === STATE.START) {
-            if (onStart) onStart();
-            return;
-        }
         const touch = e.touches[0];
         // Only trigger joystick on the left half of the screen
         if (touch.clientX < window.innerWidth / 2) {

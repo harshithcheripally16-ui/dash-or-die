@@ -27,13 +27,27 @@ export function init() {
     
     // UI Bindings
     const startBtn = document.getElementById('start-btn');
-    if (startBtn) startBtn.addEventListener('click', startGame);
+    const handleStart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        startGame();
+    };
+    if (startBtn) {
+        startBtn.addEventListener('click', handleStart);
+        startBtn.addEventListener('touchstart', handleStart, { passive: false });
+    }
     
     const restartBtn = document.getElementById('restart-btn');
-    if (restartBtn) restartBtn.addEventListener('click', () => {
+    const handleRestart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         resetGame();
         startGame();
-    });
+    };
+    if (restartBtn) {
+        restartBtn.addEventListener('click', handleRestart);
+        restartBtn.addEventListener('touchstart', handleRestart, { passive: false });
+    }
 
     setupInput({
         onStart: startGame,

@@ -72,7 +72,7 @@ export function updateInstructions(isInitialState) {
     const inst = document.getElementById('game-instructions');
     if (inst) {
         if (isInitialState) {
-            inst.innerHTML = 'Press <span class="accent">ANY KEY</span> to INITIALIZE LINK';
+            inst.innerHTML = '<span class="accent">CLICK</span> to INITIALIZE LINK';
         } else {
             inst.innerHTML = '<span class="accent">WASD</span> to MOVE | <span class="accent">SPACE</span> to DASH';
         }
