@@ -74,6 +74,20 @@ export function startDash(dx, dy) {
     }
 }
 
+// Spawn destruction particles when an enemy is destroyed
+export function spawnDestructionParticles(ex, ey) {
+    for (let i = 0; i < 15; i++) {
+        player.particles.push({
+            x: ex,
+            y: ey,
+            vx: (Math.random() - 0.5) * 15,
+            vy: (Math.random() - 0.5) * 15,
+            size: Math.random() * 5 + 3,
+            life: 1.2
+        });
+    }
+}
+
 export function updatePlayerMovement(now, moveDirX, moveDirY) {
     if (moveDirX !== 0 || moveDirY !== 0) {
         const mag = Math.hypot(moveDirX, moveDirY);

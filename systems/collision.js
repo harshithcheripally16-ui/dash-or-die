@@ -1,5 +1,5 @@
 import { state } from '../core/state.js';
-import { player } from '../entities/player.js';
+import { player, spawnDestructionParticles } from '../entities/player.js';
 
 export function updateEnemiesAndCollisions(onGameOver) {
     let minEnemyDist = Infinity;
@@ -29,8 +29,20 @@ export function updateEnemiesAndCollisions(onGameOver) {
             player.y < enemy.y + enemy.size &&
             player.y + player.size > enemy.y) {
             
-            if (onGameOver) onGameOver();
-            break;
+            if (player.isDashing) {
+                // Lethal Dash Kill
+                state.score += 50; 
+                state.effects.shake.intensity = Math.max(state.effects.shake.intensity, 12);
+                state.effects.flash = 0.5;
+                spawnDestructionParticles(enemy.x + enemy.size / 2, enemy.y + enemy.size / 2);
+                
+                // Safely remove the enemy
+                state.enemies.splice(i, 1);
+            } else {
+                // Defensive Hit (Game Over)
+                if (onGameOver) onGameOver();
+                break;
+            }
         }
     }
 }
