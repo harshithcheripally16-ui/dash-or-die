@@ -53,6 +53,26 @@ let gameState = STATE.START;
 function init() {
     canvas = document.getElementById('gameCanvas');
     ctx = canvas ? canvas.getContext('2d') : null;
+
+    // Polyfill for roundRect (Modern browsers compatibility)
+    if (ctx && !ctx.roundRect) {
+        ctx.roundRect = function (x, y, w, h, r) {
+            if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+            else r = { tl: r[0], tr: r[1], br: r[2], bl: r[3] };
+            this.beginPath();
+            this.moveTo(x + r.tl, y);
+            this.lineTo(x + w - r.tr, y);
+            this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+            this.lineTo(x + w, y + h - r.br);
+            this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+            this.lineTo(x + r.bl, y + h);
+            this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+            this.lineTo(x, y + r.bl);
+            this.quadraticCurveTo(x, y, x + r.tl, y);
+            this.closePath();
+            return this;
+        };
+    }
     
     console.log("System initializing...");
     try {
@@ -410,9 +430,11 @@ function update() {
         
         if (dist < minEnemyDist) minEnemyDist = dist;
 
-        // Tracking speed 
-        enemy.x += (dx / dist) * enemy.speed;
-        enemy.y += (dy / dist) * enemy.speed;
+        // Tracking speed with divide-by-zero protection
+        if (dist > 0.1) {
+            enemy.x += (dx / dist) * enemy.speed;
+            enemy.y += (dy / dist) * enemy.speed;
+        }
 
         // Near Miss Shake (threshold 80px)
         if (dist < 80 && !player.isDashing) {
@@ -594,7 +616,8 @@ function draw() {
 
     // Draw Enemies
     enemies.forEach(enemy => {
-        enemy.pulse = (enemy.pulse + 0.1) % (Math.PI * 2);
+        try {
+            enemy.pulse = (enemy.pulse + 0.1) % (Math.PI * 2);
         const glowSize = Math.sin(enemy.pulse) * 5 + 15;
         
         ctx.shadowBlur = glowSize;
@@ -615,6 +638,9 @@ function draw() {
         ctx.globalAlpha = 0.2;
         ctx.fillRect(enemy.x + glitchX + 5, enemy.y + glitchY + 5, enemy.size - 10, enemy.size - 10);
         ctx.globalAlpha = 1.0;
+        } catch (e) {
+            console.warn("Enemy draw failed:", e);
+        }
     });
 
     // Draw Player with Smear & Stretch Effect
@@ -665,7 +691,7 @@ function draw() {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.font = '10px Inter';
     ctx.textAlign = 'right';
-    ctx.fillText('GAME RUNNING', canvas.width - 20, canvas.height - 20);
+    ctx.fillText(`THR: ${enemies.length} | SYNC: ${Math.floor(score/10)} | STATE: ${gameState}`, canvas.width - 20, canvas.height - 20);
 }
 
 function drawGrid() {
