@@ -6,7 +6,7 @@ import { spawnEnemy, drawEnemies } from '../entities/enemy.js';
 import { updateEnemiesAndCollisions } from '../systems/collision.js';
 import { updateXPSystem, drawXpOrbs } from '../systems/xpSystem.js';
 import { updateFloatingTexts, drawFloatingTexts } from '../ui/textEffects.js';
-import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash, togglePause } from '../ui/uiManager.js';
+import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash, togglePause, setupStartMenu } from '../ui/uiManager.js';
 
 let lastTime = 0;
 
