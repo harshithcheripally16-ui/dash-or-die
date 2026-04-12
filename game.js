@@ -218,7 +218,7 @@ function startGame() {
     if (inst) inst.innerHTML = '<span class="accent">WASD</span> to MOVE | <span class="accent">SPACE</span> to DASH';
     
     // Spawn first wave immediately
-    spawnEnemy();
+    for(let i=0; i<3; i++) spawnEnemy();
 }
 
 function showScreen(id) {
