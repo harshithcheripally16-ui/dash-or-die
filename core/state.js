@@ -1,12 +1,15 @@
 export const STATE = {
     START: 'start',
     PLAYING: 'playing',
+    DYING: 'dying',
     GAMEOVER: 'gameover',
     LEVELUP: 'levelup'
 };
 
 export const state = {
     gameState: STATE.START,
+    timeScale: 1.0,
+    dyingProgress: 0,
     score: 0,
     lastSpawnTime: 0,
     spawnRate: 1500,

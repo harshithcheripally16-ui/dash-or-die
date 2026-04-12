@@ -145,8 +145,8 @@ export function updatePlayerMovement(now, moveDirX, moveDirY) {
     }
 
     // Apply Friction & Caps
-    player.walkVelocity.x *= player.walkFriction;
-    player.walkVelocity.y *= player.walkFriction;
+    player.walkVelocity.x *= Math.pow(player.walkFriction, state.timeScale);
+    player.walkVelocity.y *= Math.pow(player.walkFriction, state.timeScale);
 
     const currentWalkSpeed = Math.hypot(player.walkVelocity.x, player.walkVelocity.y);
     if (currentWalkSpeed > player.maxWalkSpeed) {
@@ -154,8 +154,8 @@ export function updatePlayerMovement(now, moveDirX, moveDirY) {
         player.walkVelocity.y = (player.walkVelocity.y / currentWalkSpeed) * player.maxWalkSpeed;
     }
 
-    player.x += player.walkVelocity.x;
-    player.y += player.walkVelocity.y;
+    player.x += player.walkVelocity.x * state.timeScale;
+    player.y += player.walkVelocity.y * state.timeScale;
 
     // Dash Trigger (Space)
     if (state.keys['Space'] && now - player.lastDashTime > player.dashCooldown && !player.isDashing) {
@@ -166,11 +166,11 @@ export function updatePlayerMovement(now, moveDirX, moveDirY) {
 
     // Dash processing
     if (player.isDashing) {
-        player.x += player.dashVelocity.x;
-        player.y += player.dashVelocity.y;
+        player.x += player.dashVelocity.x * state.timeScale;
+        player.y += player.dashVelocity.y * state.timeScale;
 
-        player.dashVelocity.x *= player.dashDecay;
-        player.dashVelocity.y *= player.dashDecay;
+        player.dashVelocity.x *= Math.pow(player.dashDecay, state.timeScale);
+        player.dashVelocity.y *= Math.pow(player.dashDecay, state.timeScale);
 
         const currentDashSpeed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
         if (currentDashSpeed < player.dashMinVelocity) {
@@ -210,9 +210,9 @@ export function updatePlayerEffects() {
     // Particles
     for (let i = player.particles.length - 1; i >= 0; i--) {
         const p = player.particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.02;
+        p.x += p.vx * state.timeScale;
+        p.y += p.vy * state.timeScale;
+        p.life -= 0.02 * state.timeScale;
         
         if (p.life <= 0) {
             player.particles.splice(i, 1);

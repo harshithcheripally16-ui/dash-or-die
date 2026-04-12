@@ -16,8 +16,8 @@ export function updateEnemiesAndCollisions(onGameOver) {
         if (dist < minEnemyDist) minEnemyDist = dist;
 
         if (dist > 0.1) {
-            enemy.x += (dx / dist) * enemy.speed;
-            enemy.y += (dy / dist) * enemy.speed;
+            enemy.x += (dx / dist) * enemy.speed * state.timeScale;
+            enemy.y += (dy / dist) * enemy.speed * state.timeScale;
         }
 
         // Near Miss Shake

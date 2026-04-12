@@ -80,40 +80,52 @@ export function updateInstructions(isInitialState) {
 }
 
 export function triggerGameOver() {
-    state.gameState = STATE.GAMEOVER;
+    if (state.gameState === STATE.DYING || state.gameState === STATE.GAMEOVER) return;
+    
+    state.gameState = STATE.DYING;
     state.effects.shake.intensity = 50;
     state.effects.flash = 1.0;
-    
-    const finalScoreVal = document.getElementById('final-score-val');
-    if (finalScoreVal) {
-        finalScoreVal.innerText = Math.floor(state.score / 10);
-    }
-    
-    showScreen('game-over');
-    
+    state.effects.zoom = 1.25;
+
+    // Trigger Cinematic Vignette
+    const vignette = document.getElementById('vignette');
+    if (vignette) vignette.classList.add('cinematic-active');
+
     // Debris particles
-    if (canvas) { // Ensure canvas exists dynamically if needed, though usually globally safe
-        for (let i = 0; i < 30; i++) {
+    if (player.particles) {
+        for (let i = 0; i < 40; i++) {
             player.particles.push({
                 x: player.x + player.size / 2,
                 y: player.y + player.size / 2,
-                vx: (Math.random() - 0.5) * 20,
-                vy: (Math.random() - 0.5) * 20,
+                vx: (Math.random() - 0.5) * 25,
+                vy: (Math.random() - 0.5) * 25,
                 size: Math.random() * 8 + 4,
-                life: 1.5
+                life: 2.0
             });
         }
     }
 
-    // Save High Score
-    try {
-        const highScore = localStorage.getItem('dashHighScore') || 0;
-        if (state.score > highScore) {
-            localStorage.setItem('dashHighScore', state.score);
+    // Delay the final UI presentation
+    setTimeout(() => {
+        if (state.gameState !== STATE.DYING) return;
+        
+        state.gameState = STATE.GAMEOVER;
+        
+        const finalScoreVal = document.getElementById('final-score-val');
+        if (finalScoreVal) {
+            finalScoreVal.innerText = Math.floor(state.score / 10);
         }
-    } catch (storageError) {
-        console.warn("Storage access denied:", storageError);
-    }
+        
+        showScreen('game-over');
+        
+        // Finalize High Score
+        try {
+            const highScore = localStorage.getItem('dashHighScore') || 0;
+            if (state.score > highScore) {
+                localStorage.setItem('dashHighScore', state.score);
+            }
+        } catch (storageError) { /* ignore */ }
+    }, 1800);
 }
 
 export function updateHighScoreDisplay() {

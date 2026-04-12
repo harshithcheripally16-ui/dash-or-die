@@ -80,6 +80,12 @@ export function resetGame() {
     player.dashVelocity = { x: 0, y: 0 };
     
     resetGameState();
+    state.timeScale = 1.0;
+    state.dyingProgress = 0;
+    
+    // Reset cinematic effects
+    const v = document.getElementById('vignette');
+    if (v) v.classList.remove('cinematic-active');
     
     const gameOverScreen = document.getElementById('game-over');
     if (gameOverScreen) gameOverScreen.style.display = 'none';
@@ -117,33 +123,46 @@ function update() {
         state.spawnRate = Math.max(state.minSpawnRate, state.spawnRate * 0.97);
     }
 
-    // Decay effects
+    // Decay/Sync effects
     state.effects.shake.intensity *= 0.9;
     state.effects.shake.x = (Math.random() - 0.5) * state.effects.shake.intensity;
     state.effects.shake.y = (Math.random() - 0.5) * state.effects.shake.intensity;
     state.effects.zoom += (1.0 - state.effects.zoom) * 0.1;
 
+    // Time Dilation logic
+    if (state.gameState === STATE.DYING) {
+        state.timeScale += (0.05 - state.timeScale) * 0.05; // Lerp to slomo
+        state.dyingProgress += 0.01;
+    } else {
+        state.timeScale = 1.0;
+    }
+
+    const dt = state.timeScale;
+
     let moveDirX = 0;
     let moveDirY = 0;
     
-    if (state.touchState.active) {
-        moveDirX = state.touchState.vector.x;
-        moveDirY = state.touchState.vector.y;
-    } else {
-        if (state.keys['KeyW'] || state.keys['ArrowUp']) moveDirY -= 1;
-        if (state.keys['KeyS'] || state.keys['ArrowDown']) moveDirY += 1;
-        if (state.keys['KeyA'] || state.keys['ArrowLeft']) moveDirX -= 1;
-        if (state.keys['KeyD'] || state.keys['ArrowRight']) moveDirX += 1;
+    if (state.gameState === STATE.PLAYING) {
+        if (state.touchState.active) {
+            moveDirX = state.touchState.vector.x;
+            moveDirY = state.touchState.vector.y;
+        } else {
+            if (state.keys['KeyW'] || state.keys['ArrowUp']) moveDirY -= 1;
+            if (state.keys['KeyS'] || state.keys['ArrowDown']) moveDirY += 1;
+            if (state.keys['KeyA'] || state.keys['ArrowLeft']) moveDirX -= 1;
+            if (state.keys['KeyD'] || state.keys['ArrowRight']) moveDirX += 1;
+        }
     }
 
-    updatePlayerMovement(now, moveDirX, moveDirY);
+    updatePlayerMovement(now, moveDirX * dt, moveDirY * dt);
     updatePlayerEffects();
     
+    // Scale existing update systems by dt inside their logic or here
     updateEnemiesAndCollisions(triggerGameOver);
     updateXPSystem();
-    updateFloatingTexts(0.016);
+    updateFloatingTexts(0.016 * dt);
 
-    state.score++;
+    if (state.gameState === STATE.PLAYING) state.score++;
     
     if (state.score % 10 === 0) {
         updateScoreDisplay();
