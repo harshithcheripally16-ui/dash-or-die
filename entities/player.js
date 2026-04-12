@@ -15,7 +15,7 @@ export const player = {
     size: 32,
     color: '#8b5cf6', // Will be synced on start
     walkSpeed: 1.8,
-    walkFriction: 0.82,
+    walkFriction: 0.85,
     maxWalkSpeed: 6.5,
     walkVelocity: { x: 0, y: 0 },
     dashVelocity: { x: 0, y: 0 },
@@ -130,31 +130,30 @@ export function triggerVoidBurst(x, y) {
     }
 }
 
-export function updatePlayerMovement(now, forwardInput, backwardInput) {
-    // 1. Rotation Logic (Face Mouse)
-    const centerX = player.x + player.size / 2;
-    const centerY = player.y + player.size / 2;
-    const targetAngle = Math.atan2(state.mousePos.y - centerY, state.mousePos.x - centerX);
+export function updatePlayerMovement(now, inputX, inputY) {
+    const isMoving = inputX !== 0 || inputY !== 0;
     
-    // Smooth rotation lerp
-    let diff = targetAngle - player.angle;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-    player.angle += diff * 0.15; // Smooth face
-
-    // 2. Locomotion Logic (W/S Forward/Backward)
-    const moveDir = forwardInput ? 1 : (backwardInput ? -1 : 0);
-    
-    if (moveDir !== 0) {
-        const ux = Math.cos(player.angle);
-        const uy = Math.sin(player.angle);
+    // 1. Locomotion Logic (Vector-based with Acceleration)
+    if (isMoving) {
+        const mag = Math.hypot(inputX, inputY);
+        const ux = inputX / mag;
+        const uy = inputY / mag;
         
-        player.walkVelocity.x += ux * player.walkSpeed * moveDir;
-        player.walkVelocity.y += uy * player.walkSpeed * moveDir;
+        // Accelerated movement
+        player.walkVelocity.x += ux * player.walkSpeed;
+        player.walkVelocity.y += uy * player.walkSpeed;
+        
+        // Update Rotation Goal (Smoothly face movement direction)
+        const targetAngle = Math.atan2(uy, ux);
+        let diff = targetAngle - player.angle;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        player.angle += diff * 0.22 * state.timeScale; 
+        
         player.lastDirection = { x: ux, y: uy };
     }
 
-    // Apply Friction & Caps
+    // 2. Friction & Physical Dynamics
     player.walkVelocity.x *= Math.pow(player.walkFriction, state.timeScale);
     player.walkVelocity.y *= Math.pow(player.walkFriction, state.timeScale);
 
@@ -164,13 +163,16 @@ export function updatePlayerMovement(now, forwardInput, backwardInput) {
         player.walkVelocity.y = (player.walkVelocity.y / currentWalkSpeed) * player.maxWalkSpeed;
     }
 
+    // Apply Position Update
     player.x += player.walkVelocity.x * state.timeScale;
     player.y += player.walkVelocity.y * state.timeScale;
 
-    // Dash Trigger (Space)
+    // 3. Dash Trigger (Space)
     if (state.keys['Space'] && now - player.lastDashTime > player.dashCooldown && !player.isDashing) {
-        // Dash always follows the current facing angle
-        startDash(Math.cos(player.angle), Math.sin(player.angle));
+        // Dash follows movement direction, or last direction if stationary
+        const dashDirX = isMoving ? (inputX / Math.hypot(inputX, inputY)) : player.lastDirection.x;
+        const dashDirY = isMoving ? (inputY / Math.hypot(inputX, inputY)) : player.lastDirection.y;
+        startDash(dashDirX, dashDirY);
     }
 
     // Dash processing

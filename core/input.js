@@ -83,13 +83,6 @@ function setupTouchListeners(onStart) {
             x: distance > 0 ? (dx / distance) * normDist : 0,
             y: distance > 0 ? (dy / distance) * normDist : 0
         };
-
-        // Update virtual mousePos for aiming based on joystick direction
-        if (state.touchState.active && distance > 5) {
-            // We project the aim point ahead based on vector
-            state.mousePos.x = window.innerWidth / 2 + (dx / distance) * 200;
-            state.mousePos.y = window.innerHeight / 2 + (dy / distance) * 200;
-        }
     }, { passive: false });
 
     window.addEventListener('touchend', (e) => {

@@ -110,6 +110,7 @@ export function resetGame() {
 
 function update() {
     const now = Date.now();
+    const dt = state.timeScale;
     
     if (state.gameState === STATE.PAUSED) return;
 
@@ -153,23 +154,31 @@ function update() {
         state.timeScale = 1.0;
     }
 
-    const dt = state.timeScale;
-
-    let forward = false;
-    let backward = false;
+    let moveDirX = 0;
+    let moveDirY = 0;
     
     if (state.gameState === STATE.PLAYING) {
         if (state.touchState.active) {
-            // Joystick vertical deflection maps to forward/backward
-            if (state.touchState.vector.y < -0.2) forward = true;
-            if (state.touchState.vector.y > 0.2) backward = true;
+            // Priority: Joystick handles full 360 vectors
+            moveDirX = state.touchState.vector.x;
+            moveDirY = state.touchState.vector.y;
         } else {
-            if (state.keys['KeyW'] || state.keys['ArrowUp']) forward = true;
-            if (state.keys['KeyS'] || state.keys['ArrowDown']) backward = true;
+            // Desktop: Combined WASD vectors
+            if (state.keys['KeyW'] || state.keys['ArrowUp']) moveDirY -= 1;
+            if (state.keys['KeyS'] || state.keys['ArrowDown']) moveDirY += 1;
+            if (state.keys['KeyA'] || state.keys['ArrowLeft']) moveDirX -= 1;
+            if (state.keys['KeyD'] || state.keys['ArrowRight']) moveDirX += 1;
+            
+            // Normalize desktop diagonal movement
+            if (moveDirX !== 0 || moveDirY !== 0) {
+                const mag = Math.hypot(moveDirX, moveDirY);
+                moveDirX /= mag;
+                moveDirY /= mag;
+            }
         }
     }
 
-    updatePlayerMovement(now, forward, backward);
+    updatePlayerMovement(now, moveDirX, moveDirY);
     updatePlayerEffects();
     
     // Scale existing update systems by dt inside their logic or here
