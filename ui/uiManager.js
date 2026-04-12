@@ -22,37 +22,47 @@ export function hideScreens() {
     if (levelUpScreen) levelUpScreen.style.display = 'none';
 }
 
-export function showLevelUpScreen() {
+export function showLevelUpScreen(choices = []) {
     hideScreens();
     const screen = document.getElementById('levelup-screen');
-    if (screen) {
+    const container = document.getElementById('upgrade-options');
+    
+    if (screen && container && choices.length > 0) {
         screen.style.display = 'flex';
         screen.style.opacity = '1';
         screen.style.visibility = 'visible';
         
-        // Bind full accessibility and click listeners
-        const cards = document.querySelectorAll('.upgrade-card');
-        cards.forEach((card, index) => {
-            // Remove old listeners by cloning
-            const newCard = card.cloneNode(true);
-            card.parentNode.replaceChild(newCard, card);
+        container.innerHTML = '';
+        
+        choices.forEach((choice, index) => {
+            const card = document.createElement('div');
+            card.className = 'upgrade-card';
+            card.tabIndex = 0;
+            card.innerHTML = `
+                <div class="upgrade-icon">${choice.icon}</div>
+                <h3>${choice.name}</h3>
+                <p>${choice.desc}</p>
+            `;
             
             const handleSelect = (e) => {
                 if (e.type === 'keydown' && e.code !== 'Enter' && e.code !== 'Space') return;
                 e.preventDefault();
-                selectUpgrade(`mock_upgrade_${index}`);
+                selectUpgrade(choice.id);
                 hideScreens();
-                if (canvas) canvas.focus(); // Return focus to game
+                if (canvas) canvas.focus();
             };
 
-            newCard.addEventListener('click', handleSelect);
-            newCard.addEventListener('touchstart', handleSelect, { passive: false });
-            newCard.addEventListener('keydown', handleSelect);
+            card.addEventListener('click', handleSelect);
+            card.addEventListener('touchstart', handleSelect, { passive: false });
+            card.addEventListener('keydown', handleSelect);
+            
+            container.appendChild(card);
         });
         
         // Auto-focus the first card for keyboard users
+        const cards = document.querySelectorAll('.upgrade-card');
         if (cards.length > 0) {
-            document.querySelectorAll('.upgrade-card')[0].focus();
+            cards[0].focus();
         }
     }
 }
