@@ -18,9 +18,11 @@ export function hideScreens() {
     const startScreen = document.getElementById('start-screen');
     const gameOverScreen = document.getElementById('game-over');
     const levelUpScreen = document.getElementById('levelup-screen');
+    const pauseScreen = document.getElementById('pause-screen');
     if (startScreen) startScreen.style.display = 'none';
     if (gameOverScreen) gameOverScreen.style.display = 'none';
     if (levelUpScreen) levelUpScreen.style.display = 'none';
+    if (pauseScreen) pauseScreen.style.display = 'none';
 }
 
 export function showLevelUpScreen(choices = []) {
@@ -126,6 +128,69 @@ export function triggerGameOver() {
             }
         } catch (storageError) { /* ignore */ }
     }, 1800);
+}
+
+export function togglePause() {
+    if (state.gameState === STATE.PLAYING) {
+        state.gameState = STATE.PAUSED;
+        const pauseScore = document.getElementById('pause-score');
+        if (pauseScore) pauseScore.innerText = Math.floor(state.score / 10);
+        showScreen('pause-screen');
+    } else if (state.gameState === STATE.PAUSED) {
+        resumeGame();
+    }
+}
+
+export function resumeGame() {
+    state.gameState = STATE.PLAYING;
+    hideScreens();
+    if (canvas) canvas.focus();
+}
+
+/**
+ * Initializes the start menu settings (color picking, theme toggle)
+ */
+export function setupStartMenu() {
+    // Theme Toggle
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', state.settings.theme);
+            themeBtn.innerText = state.settings.theme === 'dark' ? 'DARK_MODE' : 'LIGHT_MODE';
+        });
+    }
+
+    // Color Selection
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+            const color = opt.getAttribute('data-color');
+            state.settings.color = color;
+            
+            // Highlight selection
+            colorOptions.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            
+            // Update preview if any
+            const preview = document.querySelector('.player-preview');
+            if (preview) preview.style.background = color;
+        });
+    });
+
+    // Pause UI elements
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.addEventListener('click', togglePause);
+
+    const resumeBtn = document.getElementById('resume-btn');
+    if (resumeBtn) resumeBtn.addEventListener('click', resumeGame);
+
+    const pauseRestartBtn = document.getElementById('pause-restart-btn');
+    if (pauseRestartBtn) {
+        pauseRestartBtn.addEventListener('click', () => {
+            location.reload(); // Hard reset for menu restart or link to resetGame logic
+        });
+    }
 }
 
 export function updateHighScoreDisplay() {

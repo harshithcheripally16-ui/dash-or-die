@@ -21,7 +21,26 @@
                 <p class="stat-label">System Initialization</p>
                 <h1 class="game-title">DASH <span class="accent">OR</span> DIE</h1>
                 <p class="stat-label" style="margin-bottom: 2rem;">Arcade Survivor Link: DISCONNECTED</p>
-                <button id="start-btn" class="premium-btn">INITIALIZE LINK</button>
+                
+                <div class="menu-settings">
+                    <div class="setting-group">
+                        <p class="stat-label">Core Color</p>
+                        <div class="color-picker-scroll">
+                            <div class="color-option selected" data-color="#8b5cf6" style="background: #8b5cf6;"></div>
+                            <div class="color-option" data-color="#67e8f9" style="background: #67e8f9;"></div>
+                            <div class="color-option" data-color="#2dd4bf" style="background: #2dd4bf;"></div>
+                            <div class="color-option" data-color="#a855f7" style="background: #a855f7;"></div>
+                            <div class="color-option" data-color="#fb923c" style="background: #fb923c;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <p class="stat-label">Interface Theme</p>
+                        <button id="theme-toggle" class="premium-btn btn-small">DARK_MODE</button>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="premium-btn" style="margin-top: 2rem;">INITIALIZE LINK</button>
             </div>
         </div>
 
@@ -42,7 +61,12 @@
                 </div>
                 <p class="stat-label" id="hud-xp-text" style="margin-top: 0.5rem; font-size: 0.6rem;">XP: 0 / 100</p>
             </div>
+            </div>
         </div>
+
+        <button id="pause-btn" class="icon-btn pause-trigger">
+            <div class="pause-icon"></div>
+        </button>
 
         <div class="score-module">
             <p class="stat-label">Sync Index</p>
@@ -54,7 +78,6 @@
             Press <span class="accent">ANY KEY</span> to INITIALIZE LINK
         </div>
 
-        <!-- Game Over Screen -->
         <div id="game-over" class="screen-overlay" style="display: none;">
             <div class="screen-content">
                 <p class="stat-label" style="color: #ef4444;">System Failure</p>
@@ -64,6 +87,21 @@
                     <h2 id="final-score-val" class="stat-value" style="font-size: 3rem;">0</h2>
                 </div>
                 <button id="restart-btn" class="premium-btn" style="margin-top: 2rem;">RE-LINK SYSTEM</button>
+            </div>
+        </div>
+
+        <div id="pause-screen" class="screen-overlay" style="display: none;">
+            <div class="screen-content">
+                <p class="stat-label" style="color: var(--accent-color);">System Paused</p>
+                <h1 class="game-over-title">LINK_STALL</h1>
+                <div class="final-score-container" style="border-color: var(--accent-glow);">
+                    <p class="stat-label">Current Sync Index</p>
+                    <h2 class="stat-value" id="pause-score" style="font-size: 3rem;">0</h2>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button id="resume-btn" class="premium-btn">RESUME</button>
+                    <button id="pause-restart-btn" class="premium-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">RESTART</button>
+                </div>
             </div>
         </div>
         <!-- Level Up Screen -->

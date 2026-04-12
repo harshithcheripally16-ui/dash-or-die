@@ -3,11 +3,16 @@ export const STATE = {
     PLAYING: 'playing',
     DYING: 'dying',
     GAMEOVER: 'gameover',
-    LEVELUP: 'levelup'
+    LEVELUP: 'levelup',
+    PAUSED: 'paused'
 };
 
 export const state = {
     gameState: STATE.START,
+    settings: {
+        color: '#8b5cf6',
+        theme: 'dark'
+    },
     timeScale: 1.0,
     dyingProgress: 0,
     score: 0,

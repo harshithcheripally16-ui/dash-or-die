@@ -6,7 +6,7 @@ export const player = {
     x: 0,
     y: 0,
     size: 32,
-    color: '#8b5cf6',
+    color: '#8b5cf6', // Will be synced on start
     walkSpeed: 1.8,
     walkFriction: 0.82,
     maxWalkSpeed: 6.5,
@@ -227,7 +227,7 @@ export function drawPlayer() {
     player.trail.forEach((p, index) => {
         const ratio = (index + 1) / player.trail.length;
         ctx.globalAlpha = p.opacity * ratio;
-        ctx.fillStyle = player.color;
+        ctx.fillStyle = state.settings.color;
         
         const drawSize = player.size * p.scale;
         const offset = (player.size - drawSize) / 2;
@@ -252,7 +252,10 @@ export function drawPlayer() {
 
     // Draw Particles
     player.particles.forEach(p => {
-        ctx.fillStyle = `rgba(139, 92, 246, ${Math.max(0, p.life)})`;
+        ctx.fillStyle = state.settings.color.replace(')', `, ${Math.max(0, p.life)})`).replace('rgb', 'rgba').replace('#', 'rgba('); 
+        // Note: Simple hex to rgba if needed, but for neon colors it's better to just use the color with life
+        ctx.fillStyle = state.settings.color;
+        ctx.globalAlpha = Math.max(0, p.life);
         ctx.beginPath();
         ctx.arc(p.x, p.y, Math.max(0, p.size * p.life), 0, Math.PI * 2);
         ctx.fill();
@@ -269,7 +272,7 @@ export function drawPlayer() {
         
         for (let i = 0; i < 4; i++) {
             ctx.globalAlpha = Math.max(0, 0.2 - i * 0.05);
-            ctx.fillStyle = player.color;
+            ctx.fillStyle = state.settings.color;
             ctx.fillRect(-(player.size / 2) - i * 15, -player.size / 2, player.size, player.size);
         }
         ctx.globalAlpha = 1.0;
@@ -277,8 +280,8 @@ export function drawPlayer() {
     }
 
     ctx.shadowBlur = 25;
-    ctx.shadowColor = player.color;
-    ctx.fillStyle = player.color;
+    ctx.shadowColor = state.settings.color;
+    ctx.fillStyle = state.settings.color;
     
     ctx.beginPath();
     ctx.roundRect(-player.size / 2, -player.size / 2, player.size, player.size, 8);

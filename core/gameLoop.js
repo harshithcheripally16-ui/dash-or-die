@@ -6,7 +6,7 @@ import { spawnEnemy, drawEnemies } from '../entities/enemy.js';
 import { updateEnemiesAndCollisions } from '../systems/collision.js';
 import { updateXPSystem, drawXpOrbs } from '../systems/xpSystem.js';
 import { updateFloatingTexts, drawFloatingTexts } from '../ui/textEffects.js';
-import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash } from '../ui/uiManager.js';
+import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash, togglePause } from '../ui/uiManager.js';
 
 let lastTime = 0;
 
@@ -51,7 +51,17 @@ export function init() {
 
     setupInput({
         onStart: startGame,
-        onReset: resetGame
+        onReset: resetGame,
+        onPause: togglePause
+    });
+
+    setupStartMenu();
+    
+    // Global Pause Key
+    window.addEventListener('keydown', (e) => {
+        if ((e.code === 'Escape' || e.code === 'KeyP') && state.gameState === STATE.PLAYING) {
+            togglePause();
+        }
     });
     
     gameLoop(0);
@@ -97,7 +107,9 @@ export function resetGame() {
 function update() {
     const now = Date.now();
     
-    if (state.gameState !== STATE.PLAYING) {
+    if (state.gameState === STATE.PAUSED) return;
+
+    if (state.gameState !== STATE.PLAYING && state.gameState !== STATE.DYING) {
         state.effects.shake.intensity *= 0.9;
         state.effects.shake.x = (Math.random() - 0.5) * state.effects.shake.intensity;
         state.effects.shake.y = (Math.random() - 0.5) * state.effects.shake.intensity;
