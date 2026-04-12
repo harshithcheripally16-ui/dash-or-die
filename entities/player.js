@@ -33,6 +33,16 @@ export const player = {
     voidBurst: false
 };
 
+export function resetPlayer() {
+    player.isDashing = false;
+    player.trail = [];
+    player.particles = [];
+    player.walkVelocity = { x: 0, y: 0 };
+    player.dashVelocity = { x: 0, y: 0 };
+    player.lastDashTime = 0;
+    player.angle = 0;
+}
+
 // Start a dash
 export function startDash(dx, dy) {
     const mag = Math.hypot(dx, dy);

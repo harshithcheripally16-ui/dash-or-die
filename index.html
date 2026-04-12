@@ -16,7 +16,7 @@
         <canvas id="gameCanvas"></canvas>
         
         <!-- Splash Screen -->
-        <div id="splash-screen" class="screen-overlay" style="background: black;">
+        <div id="splash-screen" class="screen-overlay">
             <div class="screen-content">
                 <h1 class="splash-title">DASH OR DIE</h1>
             </div>
@@ -110,7 +110,7 @@
                     <p class="stat-label">Final Sync Index</p>
                     <h2 id="final-score-val" class="stat-value" style="font-size: 3rem;">0</h2>
                 </div>
-                <button id="restart-btn" class="premium-btn" style="margin-top: 2rem;">RE-LINK SYSTEM</button>
+                <button id="restart-btn" class="premium-btn">RE-LINK SYSTEM</button>
             </div>
         </div>
 
@@ -118,13 +118,13 @@
             <div class="screen-content">
                 <p class="stat-label" style="color: var(--accent-color);">System Paused</p>
                 <h1 class="game-over-title">LINK_STALL</h1>
-                <div class="final-score-container" style="border-color: var(--accent-glow);">
+                <div class="final-score-container">
                     <p class="stat-label">Current Sync Index</p>
                     <h2 class="stat-value" id="pause-score" style="font-size: 3rem;">0</h2>
                 </div>
                 <div style="display: flex; gap: 1rem; justify-content: center;">
                     <button id="resume-btn" class="premium-btn">RESUME</button>
-                    <button id="pause-restart-btn" class="premium-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">RESTART</button>
+                    <button id="pause-restart-btn" class="premium-btn btn-minimal">RESTART</button>
                 </div>
             </div>
         </div>

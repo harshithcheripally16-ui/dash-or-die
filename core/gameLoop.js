@@ -14,7 +14,11 @@ export function init() {
     initCanvas();
     
     try {
-        initSplashScreen();
+        if (!state.hasInitialSplashPlayed) {
+            initSplashScreen();
+        } else {
+            showScreen('start-screen');
+        }
         resizeCanvas();
         if (canvas) canvas.focus();
     } catch (e) {

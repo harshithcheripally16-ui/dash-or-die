@@ -10,6 +10,7 @@ export const STATE = {
 
 export const state = {
     gameState: STATE.SPLASH,
+    hasInitialSplashPlayed: false,
     settings: {
         color: '#8b5cf6',
         theme: 'dark'
@@ -49,4 +50,7 @@ export function resetGameState() {
     state.lastSpawnTime = Date.now();
     state.effects.flash = 0;
     state.effects.shake.intensity = 0;
+    state.effects.zoom = 1.0;
+    state.timeScale = 1.0;
+    state.dyingProgress = 0;
 }

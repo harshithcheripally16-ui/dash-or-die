@@ -1,5 +1,5 @@
-import { state, STATE } from '../core/state.js';
-import { player } from '../entities/player.js';
+import { state, STATE, resetGameState } from '../core/state.js';
+import { player, resetPlayer } from '../entities/player.js';
 import { canvas } from '../core/canvas.js';
 import { selectUpgrade } from '../systems/upgradeSystem.js';
 import { drawFloatingTexts } from './textEffects.js';
@@ -19,6 +19,18 @@ export function showScreen(id) {
         screen.style.display = 'flex';
         screen.classList.remove('fade-out');
     }
+}
+
+export function returnToMenu() {
+    state.gameState = STATE.START;
+    resetGameState();
+    resetPlayer();
+    hideScreens();
+    showScreen('start-screen');
+    
+    // Reset cinematic effects
+    const vignette = document.getElementById('vignette');
+    if (vignette) vignette.classList.remove('cinematic-active');
 }
 
 export function hideScreens() {
@@ -195,11 +207,13 @@ export function setupStartMenu() {
     const resumeBtn = document.getElementById('resume-btn');
     if (resumeBtn) resumeBtn.addEventListener('click', resumeGame);
 
+    // Global Restart Buttons
+    const restartBtn = document.getElementById('restart-btn');
+    if (restartBtn) restartBtn.addEventListener('click', returnToMenu);
+
     const pauseRestartBtn = document.getElementById('pause-restart-btn');
     if (pauseRestartBtn) {
-        pauseRestartBtn.addEventListener('click', () => {
-            location.reload();
-        });
+        pauseRestartBtn.addEventListener('click', returnToMenu);
     }
 }
 
@@ -209,6 +223,8 @@ export function setupStartMenu() {
 export function initSplashScreen() {
     const splash = document.getElementById('splash-screen');
     if (!splash) return;
+
+    state.hasInitialSplashPlayed = true;
 
     // The animation duration is 3.5s in CSS
     setTimeout(() => {
