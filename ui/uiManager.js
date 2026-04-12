@@ -144,9 +144,19 @@ export function drawDebugOverlay(ctx) {
 }
 
 export function drawCollisionFlash(ctx) {
-    if (state.effects.flash > 0.1 && canvas) {
-        ctx.fillStyle = `rgba(139, 92, 246, ${state.effects.flash * 0.4})`;
+    if (state.effects.flash > 0.01 && canvas) {
+        // Impact flash (white-out starting)
+        const alpha = state.effects.flash;
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.5;
+        ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        state.effects.flash *= 0.85;
+        
+        ctx.globalAlpha = alpha * 0.3;
+        ctx.fillStyle = 'var(--accent-color)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+        
+        state.effects.flash *= 0.88;
     }
 }

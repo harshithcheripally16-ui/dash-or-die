@@ -64,10 +64,10 @@ body {
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 1.25rem 1.75rem;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -146,8 +146,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Ensure it is above everything */
-  animation: fadeIn 0.4s ease-out;
+  z-index: 9999;
+  animation: overlayFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.5s ease, backdrop-filter 0.5s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(25px); }
 }
 
 .screen-content {
@@ -181,10 +187,11 @@ body {
   pointer-events: auto;
 }
 
-.premium-btn:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 0 40px var(--accent-color);
-  filter: brightness(1.2);
+.premium-btn:hover, .premium-btn:focus-visible {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 15px 45px rgba(139, 92, 246, 0.6);
+  filter: brightness(1.15);
+  outline: none;
 }
 
 .premium-btn:active {

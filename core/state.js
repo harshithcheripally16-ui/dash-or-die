@@ -23,7 +23,8 @@ export const state = {
     effects: {
         shake: { x: 0, y: 0, intensity: 0 },
         flash: 0,
-        proximity: 0
+        proximity: 0,
+        zoom: 1.0
     }
 };
 

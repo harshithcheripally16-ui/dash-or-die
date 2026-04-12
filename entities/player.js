@@ -223,13 +223,32 @@ export function updatePlayerEffects() {
 export function drawPlayer() {
     if (!ctx) return;
     
-    // Draw Trail
-    player.trail.forEach((p) => {
-        ctx.fillStyle = `rgba(99, 102, 241, ${Math.max(0, p.opacity)})`;
+    // Draw Trail (Motion Blur)
+    player.trail.forEach((p, index) => {
+        const ratio = (index + 1) / player.trail.length;
+        ctx.globalAlpha = p.opacity * ratio;
+        ctx.fillStyle = player.color;
+        
         const drawSize = player.size * p.scale;
         const offset = (player.size - drawSize) / 2;
-        ctx.fillRect(p.x + offset, p.y + offset, drawSize, drawSize);
+        
+        ctx.beginPath();
+        if (player.isDashing) {
+            // During dash, trail is more stretched
+            const speed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
+            const stretch = 1 + (speed / 30) * ratio;
+            ctx.save();
+            ctx.translate(p.x + player.size / 2, p.y + player.size / 2);
+            ctx.rotate(player.angle);
+            ctx.roundRect(-drawSize / 2 * stretch, -drawSize / 2, drawSize * stretch, drawSize, 6);
+            ctx.fill();
+            ctx.restore();
+        } else {
+            ctx.roundRect(p.x + offset, p.y + offset, drawSize, drawSize, 4);
+            ctx.fill();
+        }
     });
+    ctx.globalAlpha = 1.0;
 
     // Draw Particles
     player.particles.forEach(p => {

@@ -59,6 +59,7 @@ export function updateXPSystem() {
                 // Add a visual flash and hit stop
                 state.effects.flash = 0.8;
                 state.effects.shake.intensity = 20;
+                state.effects.zoom = 1.15;
                 
                 // Pause game and invoke UI
                 triggerLevelUp();
@@ -76,19 +77,31 @@ export function drawXpOrbs(ctx) {
         const pulse = Math.sin(time + orb.pulseOffset) * 2;
         const currentSize = orb.size + pulse;
 
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = orb.magnetized ? '#22d3ee' : '#fde047'; // Cyan when moving to player, yellow when static
+        // Minecraft XP colors: lime and emerald greens
+        const innerColor = '#ffffff';
+        const midColor = orb.magnetized ? '#4ade80' : '#84cc16'; // Lighter/Darker green
+        const glowColor = orb.magnetized ? '#22c55e' : '#15803d';
+        
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = glowColor;
         
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, Math.max(2, currentSize), 0, Math.PI * 2);
-        ctx.fillStyle = orb.magnetized ? '#67e8f9' : '#fef08a';
+        ctx.fillStyle = midColor;
         ctx.fill();
         
-        // Inner core
+        // Secondary outer glow ring
         ctx.shadowBlur = 0;
+        ctx.strokeStyle = `rgba(132, 204, 22, ${0.3 + Math.sin(time) * 0.2})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(orb.x, orb.y, currentSize + 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner core
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, Math.max(1, currentSize / 2), 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = innerColor;
         ctx.fill();
     });
 }

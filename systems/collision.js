@@ -33,8 +33,9 @@ export function updateEnemiesAndCollisions(onGameOver) {
             if (player.isDashing) {
                 // Lethal Dash Kill
                 state.score += 50; 
-                state.effects.shake.intensity = Math.max(state.effects.shake.intensity, 12);
+                state.effects.shake.intensity = Math.max(state.effects.shake.intensity, 18);
                 state.effects.flash = 0.5;
+                state.effects.zoom = 1.05;
                 spawnDestructionParticles(enemy.x + enemy.size / 2, enemy.y + enemy.size / 2);
                 
                 // Safely remove the enemy

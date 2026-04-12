@@ -104,6 +104,12 @@ function update() {
         state.spawnRate = Math.max(state.minSpawnRate, state.spawnRate * 0.97);
     }
 
+    // Decay effects
+    state.effects.shake.intensity *= 0.9;
+    state.effects.shake.x = (Math.random() - 0.5) * state.effects.shake.intensity;
+    state.effects.shake.y = (Math.random() - 0.5) * state.effects.shake.intensity;
+    state.effects.zoom += (1.0 - state.effects.zoom) * 0.1;
+
     let moveDirX = 0;
     let moveDirY = 0;
     
@@ -142,6 +148,15 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
+    
+    // Global transformations (Shake + Zoom)
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
+    ctx.translate(centerX, centerY);
+    ctx.scale(state.effects.zoom, state.effects.zoom);
+    ctx.translate(-centerX, -centerY);
+
     if (state.effects.shake.intensity > 0.1) {
         ctx.translate(state.effects.shake.x, state.effects.shake.y);
     }
