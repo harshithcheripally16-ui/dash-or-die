@@ -4,23 +4,29 @@ import { canvas } from '../core/canvas.js';
 import { selectUpgrade } from '../systems/upgradeSystem.js';
 import { drawFloatingTexts } from './textEffects.js';
 
+export function showHUD() {
+    const overlays = ['.ui-overlay', '.score-module', '.pause-trigger', '#game-instructions'];
+    overlays.forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) el.style.display = 'block';
+    });
+}
+
 export function showScreen(id) {
     hideScreens();
     const screen = document.getElementById(id);
     if (screen) {
         screen.style.display = 'flex';
-        screen.style.opacity = '1';
-        screen.style.visibility = 'visible';
+        screen.classList.remove('fade-out');
     }
 }
 
-    const pauseScreen = document.getElementById('pause-screen');
-    const splashScreen = document.getElementById('splash-screen');
-    if (startScreen) startScreen.style.display = 'none';
-    if (gameOverScreen) gameOverScreen.style.display = 'none';
-    if (levelUpScreen) levelUpScreen.style.display = 'none';
-    if (pauseScreen) pauseScreen.style.display = 'none';
-    if (splashScreen) splashScreen.style.display = 'none';
+export function hideScreens() {
+    const screens = ['start-screen', 'game-over', 'levelup-screen', 'pause-screen', 'splash-screen'];
+    screens.forEach(id => {
+        const s = document.getElementById(id);
+        if (s) s.style.display = 'none';
+    });
 }
 
 export function showLevelUpScreen(choices = []) {
@@ -149,36 +155,38 @@ export function resumeGame() {
     if (joystickBase && !state.touchState.active) joystickBase.style.display = 'none';
 }
 
-/**
- * Initializes the start menu settings (color picking, theme toggle)
- */
 export function setupStartMenu() {
-    // Theme Toggle
+    // Theme Toggle (Switch Style)
     const themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
-            state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', state.settings.theme);
-            themeBtn.innerText = state.settings.theme === 'dark' ? 'DARK_MODE' : 'LIGHT_MODE';
+            const newTheme = state.settings.theme === 'dark' ? 'light' : 'dark';
+            state.settings.theme = newTheme;
+            document.body.setAttribute('data-theme', newTheme);
         });
     }
 
-    // Color Selection
+    // Color Carousel
     const colorOptions = document.querySelectorAll('.color-option');
     colorOptions.forEach(opt => {
         opt.addEventListener('click', () => {
-            const color = opt.getAttribute('data-color');
-            state.settings.color = color;
-            
-            // Highlight selection
             colorOptions.forEach(o => o.classList.remove('selected'));
             opt.classList.add('selected');
-            
-            // Update preview if any
-            const preview = document.querySelector('.player-preview');
-            if (preview) preview.style.background = color;
+            const color = opt.getAttribute('data-color');
+            state.settings.color = color;
+            player.color = color; // Preview on player object for when game starts
         });
     });
+
+    // Quit Button
+    const quitBtn = document.getElementById('quit-btn');
+    if (quitBtn) {
+        quitBtn.addEventListener('click', () => {
+            if (confirm("Disconnect from Link?")) {
+                window.location.href = "about:blank";
+            }
+        });
+    }
 
     // Pause UI elements
     const pauseBtn = document.getElementById('pause-btn');
@@ -190,7 +198,7 @@ export function setupStartMenu() {
     const pauseRestartBtn = document.getElementById('pause-restart-btn');
     if (pauseRestartBtn) {
         pauseRestartBtn.addEventListener('click', () => {
-            location.reload(); // Hard reset for menu restart or link to resetGame logic
+            location.reload();
         });
     }
 }

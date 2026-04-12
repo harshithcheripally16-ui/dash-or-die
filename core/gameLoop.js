@@ -6,7 +6,7 @@ import { spawnEnemy, drawEnemies } from '../entities/enemy.js';
 import { updateEnemiesAndCollisions } from '../systems/collision.js';
 import { updateXPSystem, drawXpOrbs } from '../systems/xpSystem.js';
 import { updateFloatingTexts, drawFloatingTexts } from '../ui/textEffects.js';
-import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash, togglePause, setupStartMenu, initSplashScreen } from '../ui/uiManager.js';
+import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, showHUD, drawDebugOverlay, drawCollisionFlash, togglePause, setupStartMenu, initSplashScreen } from '../ui/uiManager.js';
 
 let lastTime = 0;
 
@@ -70,10 +70,15 @@ export function init() {
 export function startGame() {
     state.gameState = STATE.PLAYING;
     hideScreens();
+    showHUD();
     state.lastSpawnTime = Date.now();
     
-    // Sync settings
+    // Sync settings and reset position
     player.color = state.settings.color;
+    if (canvas) {
+        player.x = canvas.width / 2 - player.size / 2;
+        player.y = canvas.height / 2 - player.size / 2;
+    }
     
     updateHUD();
     updateInstructions(false);
@@ -110,7 +115,7 @@ export function resetGame() {
 
 function update() {
     const now = Date.now();
-    const gameDelta = state.timeScale;
+    const gameDelta = state.timeScale || 1.0;
     
     if (state.gameState === STATE.PAUSED) return;
 

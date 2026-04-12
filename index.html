@@ -23,16 +23,29 @@
         </div>
 
         <!-- Start Screen -->
-        <div id="start-screen" class="screen-overlay">
-            <div class="screen-content">
-                <p class="stat-label">System Initialization</p>
-                <h1 class="game-title">DASH <span class="accent">OR</span> DIE</h1>
-                <p class="stat-label" style="margin-bottom: 2rem;">Arcade Survivor Link: DISCONNECTED</p>
-                
-                <div class="menu-settings">
-                    <div class="setting-group">
-                        <p class="stat-label">Core Color</p>
-                        <div class="color-picker-scroll">
+        <div id="start-screen" class="screen-overlay" style="display: none;">
+            <div class="split-menu-container">
+                <!-- Left Panel: Focus Zone -->
+                <div class="menu-panel panel-left">
+                    <div class="branding">
+                        <p class="stat-label">System State: INITIALIZING</p>
+                        <h1 class="game-title main-title">DASH <span class="accent">OR</span> DIE</h1>
+                        <p class="stat-label subtitle">Arcade Survivor Link: READY</p>
+                    </div>
+                    
+                    <button id="start-btn" class="premium-btn btn-hub">
+                        <span class="btn-glow"></span>
+                        INITIALIZE LINK
+                    </button>
+                    
+                    <button id="quit-btn" class="btn-minimal">TERMINATE_PROCESS</button>
+                </div>
+
+                <!-- Right Panel: Utility Zone -->
+                <div class="menu-panel panel-right">
+                    <div class="menu-module module-custom">
+                        <p class="stat-label module-title">Core Signature</p>
+                        <div class="color-carousel">
                             <div class="color-option selected" data-color="#8b5cf6" style="background: #8b5cf6;"></div>
                             <div class="color-option" data-color="#67e8f9" style="background: #67e8f9;"></div>
                             <div class="color-option" data-color="#2dd4bf" style="background: #2dd4bf;"></div>
@@ -41,17 +54,21 @@
                         </div>
                     </div>
                     
-                    <div class="setting-group">
-                        <p class="stat-label">Interface Theme</p>
-                        <button id="theme-toggle" class="premium-btn btn-small">DARK_MODE</button>
+                    <div class="menu-module module-settings">
+                        <p class="stat-label module-title">Environment Theme</p>
+                        <div class="theme-switch-container">
+                            <span class="theme-label">DARK</span>
+                            <div id="theme-toggle" class="theme-toggle-switch">
+                                <div class="switch-handle"></div>
+                            </div>
+                            <span class="theme-label">LIGHT</span>
+                        </div>
                     </div>
                 </div>
-
-                <button id="start-btn" class="premium-btn" style="margin-top: 2rem;">INITIALIZE LINK</button>
             </div>
         </div>
 
-        <div class="ui-overlay">
+        <div class="ui-overlay" style="display: none;">
             <div class="stat-module">
                 <p class="stat-label">System State</p>
                 <div class="stat-value">OPERATIONAL</div>
@@ -71,17 +88,17 @@
             </div>
         </div>
 
-        <button id="pause-btn" class="icon-btn pause-trigger">
+        <button id="pause-btn" class="icon-btn pause-trigger" style="display: none;">
             <div class="pause-icon"></div>
         </button>
 
-        <div class="score-module">
+        <div class="score-module" style="display: none;">
             <p class="stat-label">Sync Index</p>
             <h1 class="stat-value" id="score-value">0</h1>
             <p class="stat-label high-score-label">Peak Stability: <span id="high-score-value">0</span></p>
         </div>
 
-        <div class="instructions" id="game-instructions">
+        <div class="instructions" id="game-instructions" style="display: none;">
             Press <span class="accent">ANY KEY</span> to INITIALIZE LINK
         </div>
 

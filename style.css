@@ -210,27 +210,111 @@ body {
   opacity: 0 !important;
   pointer-events: none;
 }
-}
 
 @keyframes overlayFadeIn {
   from { opacity: 0; backdrop-filter: blur(0px); }
   to { opacity: 1; backdrop-filter: blur(25px); }
 }
 
-.screen-content {
-  text-align: center;
+/* Split Menu Layout */
+.split-menu-container {
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  height: 70vh;
+  gap: 2rem;
+  animation: menuAppear 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.game-title {
-  font-size: 5rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  margin-bottom: 0.5rem;
+@keyframes menuAppear {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.menu-panel {
+  flex: 1;
+  background: var(--panel-bg);
+  backdrop-filter: var(--ui-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-left {
+  flex: 1.2;
+  justify-content: space-between;
+  border-left: 4px solid var(--accent-color);
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.panel-right {
+  gap: 2rem;
+  background: rgba(10, 10, 15, 0.4);
+}
+
+.branding .main-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  margin: 1rem 0;
+  text-align: left;
   background: linear-gradient(135deg, #fff 0%, var(--accent-color) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 30px var(--accent-glow));
+}
+
+.branding .subtitle {
+  letter-spacing: 0.3em;
+  opacity: 0.7;
+}
+
+/* Hub Button */
+.btn-hub {
+  position: relative;
+  width: 100%;
+  padding: 2rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.btn-hub:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 0 50px var(--accent-color);
+}
+
+.btn-minimal {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 1rem;
+  opacity: 0.5;
+  transition: all 0.3s;
+  align-self: flex-start;
+}
+
+.btn-minimal:hover {
+  opacity: 1;
+  color: #ef4444;
+}
+
+.screen-content {
+  text-align: center;
 }
 
 .premium-btn {
