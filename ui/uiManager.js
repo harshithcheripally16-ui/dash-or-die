@@ -2,6 +2,7 @@ import { state, STATE } from '../core/state.js';
 import { player } from '../entities/player.js';
 import { canvas } from '../core/canvas.js';
 import { selectUpgrade } from '../systems/upgradeSystem.js';
+import { drawFloatingTexts } from './textEffects.js';
 
 export function showScreen(id) {
     hideScreens();
@@ -128,19 +129,43 @@ export function updateHighScoreDisplay() {
 }
 
 export function updateScoreDisplay() {
+    updateHUD();
+}
+
+/**
+ * Updates all HUD elements (Score, Level, XP Bar)
+ */
+export function updateHUD() {
+    // Score
     const scoreVal = document.getElementById('score-value');
     if (scoreVal) {
         scoreVal.innerText = Math.floor(state.score / 10);
     }
+
+    // Level
+    const levelVal = document.getElementById('hud-level');
+    if (levelVal) {
+        levelVal.innerText = `LVL: ${state.xp.level}`;
+    }
+
+    // XP Bar & Text
+    const xpBar = document.getElementById('xp-bar');
+    const xpText = document.getElementById('hud-xp-text');
+    if (xpBar && xpText) {
+        const percent = (state.xp.current / state.xp.required) * 100;
+        xpBar.style.width = `${percent}%`;
+        xpText.innerText = `XP: ${state.xp.current} / ${state.xp.required}`;
+    }
 }
 
 export function drawDebugOverlay(ctx) {
+    // Debug info moved to HUD, leaving only dev metrics
+    if (!canvas || !state.debug) return;
+    
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.font = '10px Inter';
     ctx.textAlign = 'right';
-    if (canvas) {
-        ctx.fillText(`THR: ${state.enemies.length} | SYNC: ${Math.floor(state.score/10)} | LVL: ${state.xp.level} | XP: ${state.xp.current}/${state.xp.required}`, canvas.width - 20, canvas.height - 20);
-    }
+    ctx.fillText(`THR: ${state.enemies.length} | SYNC: ${Math.floor(state.score/10)}`, canvas.width - 20, canvas.height - 20);
 }
 
 export function drawCollisionFlash(ctx) {

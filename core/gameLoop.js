@@ -5,24 +5,24 @@ import { player, updatePlayerMovement, updatePlayerEffects, drawPlayer } from '.
 import { spawnEnemy, drawEnemies } from '../entities/enemy.js';
 import { updateEnemiesAndCollisions } from '../systems/collision.js';
 import { updateXPSystem, drawXpOrbs } from '../systems/xpSystem.js';
-import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, drawDebugOverlay, drawCollisionFlash } from '../ui/uiManager.js';
+import { updateFloatingTexts, drawFloatingTexts } from '../ui/textEffects.js';
+import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash } from '../ui/uiManager.js';
 
 let lastTime = 0;
 
 export function init() {
     initCanvas();
-    console.log("System initializing...");
     
     try {
         showScreen('start-screen');
         resizeCanvas();
         if (canvas) canvas.focus();
     } catch (e) {
-        console.error("Core initialization failed:", e);
+        // Silent fail
     }
     
     window.addEventListener('resize', () => {
-        try { resizeCanvas(); } catch (e) { console.warn("Resize failed:", e); }
+        try { resizeCanvas(); } catch (e) { /* ignore */ }
     });
     
     // UI Bindings
@@ -44,11 +44,10 @@ export function init() {
 }
 
 export function startGame() {
-    console.log("GAME STARTING: Link established.");
     state.gameState = STATE.PLAYING;
     hideScreens();
     state.lastSpawnTime = Date.now();
-    
+    updateHUD();
     updateInstructions(false);
     
     // Spawn first wave
@@ -128,6 +127,7 @@ function update() {
     
     updateEnemiesAndCollisions(triggerGameOver);
     updateXPSystem();
+    updateFloatingTexts(0.016);
 
     state.score++;
     
@@ -163,6 +163,7 @@ function draw() {
 
     drawGrid();
     drawXpOrbs(ctx);
+    drawFloatingTexts(ctx);
     drawPlayer();
     drawEnemies();
     

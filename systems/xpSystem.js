@@ -1,9 +1,11 @@
 import { state } from '../core/state.js';
 import { player } from '../entities/player.js';
 import { triggerLevelUp } from './upgradeSystem.js';
+import { spawnFloatingText } from '../ui/textEffects.js';
+import { updateHUD } from '../ui/uiManager.js';
 
 export function setupXPSystem() {
-    console.log("XP System active.");
+    // Initialization logic
 }
 
 export function spawnOrb(x, y) {
@@ -48,13 +50,15 @@ export function updateXPSystem() {
             state.xp.current += 10;
             state.orbs.splice(i, 1);
             
-            // Basic UI flash or sound could go here
+            spawnFloatingText(player.x, player.y - 20, "+10 XP", "#84cc16");
+            updateHUD();
+            
             if (state.xp.current >= state.xp.required) {
                 // Level Up Trigger!
                 state.xp.current -= state.xp.required;
                 state.xp.level++;
                 state.xp.required = Math.floor(state.xp.required * 1.5);
-                console.log(`LEVEL UP! Now level ${state.xp.level}`);
+                updateHUD();
                 
                 // Add a visual flash and hit stop
                 state.effects.flash = 0.8;

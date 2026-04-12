@@ -25,12 +25,14 @@ export const state = {
         flash: 0,
         proximity: 0,
         zoom: 1.0
-    }
+    },
+    texts: []
 };
 
 export function resetGameState() {
     state.enemies = [];
     state.orbs = [];
+    state.texts = [];
     state.score = 0;
     state.xp = { current: 0, required: 100, level: 1 };
     state.spawnRate = 1500;

@@ -1,6 +1,7 @@
 import { state } from '../core/state.js';
 import { player, spawnDestructionParticles } from '../entities/player.js';
 import { spawnOrb } from './xpSystem.js';
+import { spawnFloatingText } from '../ui/textEffects.js';
 
 export function updateEnemiesAndCollisions(onGameOver) {
     let minEnemyDist = Infinity;
@@ -45,6 +46,9 @@ export function updateEnemiesAndCollisions(onGameOver) {
                 
                 // Spawn XP orb at the center of the enemy
                 spawnOrb(ex, ey);
+                
+                // Spawn Floating Score
+                spawnFloatingText(ex, ey, "+50", "var(--accent-color)");
             } else {
                 // Defensive Hit (Game Over)
                 if (onGameOver) onGameOver();

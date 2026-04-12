@@ -9,7 +9,7 @@ export const UPGRADE_POOL = [
 ];
 
 export function setupUpgradeSystem() {
-    console.log("Upgrade System initialized.");
+    // Initialized
 }
 
 export function triggerLevelUp() {
@@ -23,7 +23,7 @@ export function triggerLevelUp() {
 }
 
 export function selectUpgrade(upgradeId) {
-    console.log(`Upgrade Selected: ${upgradeId}`);
+    // Processing upgrade:
     
     switch(upgradeId) {
         case 'dashSpeed':
