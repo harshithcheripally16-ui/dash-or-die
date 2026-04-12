@@ -30,18 +30,30 @@ export function showLevelUpScreen() {
         screen.style.opacity = '1';
         screen.style.visibility = 'visible';
         
-        // Temporarily bind buttons just to resume
+        // Bind full accessibility and click listeners
         const cards = document.querySelectorAll('.upgrade-card');
         cards.forEach((card, index) => {
             // Remove old listeners by cloning
             const newCard = card.cloneNode(true);
             card.parentNode.replaceChild(newCard, card);
             
-            newCard.addEventListener('click', () => {
+            const handleSelect = (e) => {
+                if (e.type === 'keydown' && e.code !== 'Enter' && e.code !== 'Space') return;
+                e.preventDefault();
                 selectUpgrade(`mock_upgrade_${index}`);
                 hideScreens();
-            });
+                if (canvas) canvas.focus(); // Return focus to game
+            };
+
+            newCard.addEventListener('click', handleSelect);
+            newCard.addEventListener('touchstart', handleSelect, { passive: false });
+            newCard.addEventListener('keydown', handleSelect);
         });
+        
+        // Auto-focus the first card for keyboard users
+        if (cards.length > 0) {
+            document.querySelectorAll('.upgrade-card')[0].focus();
+        }
     }
 }
 
