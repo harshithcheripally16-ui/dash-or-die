@@ -19,7 +19,6 @@ export function spawnOrb(x, y) {
 }
 
 export function updateXPSystem() {
-    const magnetRadius = 150;
     const collectionRadius = player.size / 2 + 10;
     const magnetForce = 0.8;
     const friction = 0.9;
@@ -38,7 +37,7 @@ export function updateXPSystem() {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         // Magnet logic
-        if (dist < magnetRadius) {
+        if (dist < player.magnetRadius) {
             orb.magnetized = true;
             orb.vx += (dx / dist) * magnetForce;
             orb.vy += (dy / dist) * magnetForce;

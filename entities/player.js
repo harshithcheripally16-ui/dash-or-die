@@ -21,7 +21,9 @@ export const player = {
     angle: 0,
     lastDirection: { x: 1, y: 0 },
     trail: [],
-    particles: []
+    particles: [],
+    magnetRadius: 150,
+    voidBurst: false
 };
 
 // Start a dash
@@ -88,6 +90,39 @@ export function spawnDestructionParticles(ex, ey) {
     }
 }
 
+// Trigger Void Burst Explosion
+export function triggerVoidBurst(x, y) {
+    // Visual explosion
+    state.effects.flash = 0.8;
+    state.effects.shake.intensity = 25;
+    
+    for (let i = 0; i < 40; i++) {
+        player.particles.push({
+            x: x + player.size / 2,
+            y: y + player.size / 2,
+            vx: (Math.random() - 0.5) * 30,
+            vy: (Math.random() - 0.5) * 30,
+            size: Math.random() * 8 + 4,
+            life: 1.5
+        });
+    }
+
+    // Kill enemies within radius
+    const burstRadius = 250;
+    for (let i = state.enemies.length - 1; i >= 0; i--) {
+        const enemy = state.enemies[i];
+        const dx = x - enemy.x;
+        const dy = y - enemy.y;
+        if (Math.hypot(dx, dy) < burstRadius) {
+            state.score += 50;
+            state.enemies.splice(i, 1);
+            import('../systems/xpSystem.js').then(({ spawnOrb }) => {
+                spawnOrb(enemy.x + enemy.size / 2, enemy.y + enemy.size / 2);
+            });
+        }
+    }
+}
+
 export function updatePlayerMovement(now, moveDirX, moveDirY) {
     if (moveDirX !== 0 || moveDirY !== 0) {
         const mag = Math.hypot(moveDirX, moveDirY);
@@ -139,6 +174,9 @@ export function updatePlayerMovement(now, moveDirX, moveDirY) {
 
         const currentDashSpeed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
         if (currentDashSpeed < player.dashMinVelocity) {
+            if (player.voidBurst) {
+                triggerVoidBurst(player.x, player.y);
+            }
             player.isDashing = false;
             player.dashVelocity = { x: 0, y: 0 };
         }
