@@ -1,5 +1,4 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas ? canvas.getContext('2d') : null;
+let canvas, ctx;
 
 // Game state
 const player = {
@@ -52,10 +51,13 @@ let gameState = STATE.START;
 
 // Initialization
 function init() {
+    canvas = document.getElementById('gameCanvas');
+    ctx = canvas ? canvas.getContext('2d') : null;
+    
     console.log("System initializing...");
     try {
-        resizeCanvas();
         showScreen('start-screen');
+        resizeCanvas();
     } catch (e) {
         console.error("Core initialization failed:", e);
     }
@@ -387,7 +389,10 @@ function update() {
 
     // Handle Enemies & Proximity
     let minEnemyDist = Infinity;
-    enemies.forEach((enemy, index) => {
+    
+    // Efficiently track and check collisions
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
         const dx = player.x - enemy.x;
         const dy = player.y - enemy.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -409,8 +414,9 @@ function update() {
             player.y < enemy.y + enemy.size &&
             player.y + player.size > enemy.y) {
             triggerGameOver();
+            break; // Stop processing further enemies on death
         }
-    });
+    }
 
     // Update Proximity Vignette
     const vignette = document.getElementById('vignette');
@@ -470,13 +476,17 @@ function update() {
 }
 
 function updateParticles() {
-    if (player.particles) {
-        player.particles.forEach((p, index) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life -= 0.02;
-            if (p.life <= 0) player.particles.splice(index, 1);
-        });
+    if (!player.particles) return;
+    
+    for (let i = player.particles.length - 1; i >= 0; i--) {
+        const p = player.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        
+        if (p.life <= 0) {
+            player.particles.splice(i, 1);
+        }
     }
 }
 
@@ -532,9 +542,13 @@ function triggerGameOver() {
     }
 
     // Save High Score
-    const highScore = localStorage.getItem('dashHighScore') || 0;
-    if (score > highScore) {
-        localStorage.setItem('dashHighScore', score);
+    try {
+        const highScore = localStorage.getItem('dashHighScore') || 0;
+        if (score > highScore) {
+            localStorage.setItem('dashHighScore', score);
+        }
+    } catch (storageError) {
+        console.warn("Storage access denied:", storageError);
     }
 
     document.getElementById('game-over').style.display = 'flex';
@@ -663,8 +677,12 @@ function drawGrid() {
 }
 
 function gameLoop() {
-    update();
-    draw();
+    try {
+        update();
+        draw();
+    } catch (loopError) {
+        console.error("Game Loop Execution Error:", loopError);
+    }
     requestAnimationFrame(gameLoop);
 }
 
