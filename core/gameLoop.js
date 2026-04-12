@@ -71,6 +71,10 @@ export function startGame() {
     state.gameState = STATE.PLAYING;
     hideScreens();
     state.lastSpawnTime = Date.now();
+    
+    // Sync settings
+    player.color = state.settings.color;
+    
     updateHUD();
     updateInstructions(false);
     

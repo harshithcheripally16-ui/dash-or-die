@@ -145,6 +145,10 @@ export function resumeGame() {
     state.gameState = STATE.PLAYING;
     hideScreens();
     if (canvas) canvas.focus();
+    
+    // Ensure joystick is hidden if not active
+    const joystickBase = document.getElementById('joystick-base');
+    if (joystickBase && !state.touchState.active) joystickBase.style.display = 'none';
 }
 
 /**

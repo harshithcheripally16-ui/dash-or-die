@@ -2,6 +2,13 @@ import { state } from '../core/state.js';
 import { canvas, ctx } from '../core/canvas.js';
 import { triggerGameOver } from '../ui/uiManager.js';
 
+function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export const player = {
     x: 0,
     y: 0,
@@ -254,10 +261,8 @@ export function drawPlayer() {
 
     // Draw Particles
     player.particles.forEach(p => {
-        ctx.fillStyle = state.settings.color.replace(')', `, ${Math.max(0, p.life)})`).replace('rgb', 'rgba').replace('#', 'rgba('); 
-        // Note: Simple hex to rgba if needed, but for neon colors it's better to just use the color with life
-        ctx.fillStyle = state.settings.color;
-        ctx.globalAlpha = Math.max(0, p.life);
+        const opacity = Math.max(0, p.life);
+        ctx.fillStyle = hexToRgba(state.settings.color, opacity);
         ctx.beginPath();
         ctx.arc(p.x, p.y, Math.max(0, p.size * p.life), 0, Math.PI * 2);
         ctx.fill();
