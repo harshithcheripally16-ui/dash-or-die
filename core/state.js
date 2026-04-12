@@ -1,7 +1,8 @@
 export const STATE = {
     START: 'start',
     PLAYING: 'playing',
-    GAMEOVER: 'gameover'
+    GAMEOVER: 'gameover',
+    LEVELUP: 'levelup'
 };
 
 export const state = {

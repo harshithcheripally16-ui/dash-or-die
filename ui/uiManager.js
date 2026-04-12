@@ -1,6 +1,7 @@
 import { state, STATE } from '../core/state.js';
 import { player } from '../entities/player.js';
 import { canvas } from '../core/canvas.js';
+import { selectUpgrade } from '../systems/upgradeSystem.js';
 
 export function showScreen(id) {
     hideScreens();
@@ -15,8 +16,33 @@ export function showScreen(id) {
 export function hideScreens() {
     const startScreen = document.getElementById('start-screen');
     const gameOverScreen = document.getElementById('game-over');
+    const levelUpScreen = document.getElementById('levelup-screen');
     if (startScreen) startScreen.style.display = 'none';
     if (gameOverScreen) gameOverScreen.style.display = 'none';
+    if (levelUpScreen) levelUpScreen.style.display = 'none';
+}
+
+export function showLevelUpScreen() {
+    hideScreens();
+    const screen = document.getElementById('levelup-screen');
+    if (screen) {
+        screen.style.display = 'flex';
+        screen.style.opacity = '1';
+        screen.style.visibility = 'visible';
+        
+        // Temporarily bind buttons just to resume
+        const cards = document.querySelectorAll('.upgrade-card');
+        cards.forEach((card, index) => {
+            // Remove old listeners by cloning
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+            
+            newCard.addEventListener('click', () => {
+                selectUpgrade(`mock_upgrade_${index}`);
+                hideScreens();
+            });
+        });
+    }
 }
 
 export function updateInstructions(isInitialState) {

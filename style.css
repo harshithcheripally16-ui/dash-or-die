@@ -228,18 +228,71 @@ body {
 }
 
 .instructions {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  background: rgba(0, 0, 0, 0.5);
-  padding: 0.6rem 1.5rem;
-  border-radius: 100px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  animation: fadeIn 2s ease-in;
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.6;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    z-index: 1000;
+}
+
+/* --- Level Up UI --- */
+.levelup-content {
+    max-width: 800px;
+    width: 90%;
+}
+
+.upgrade-cards-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.upgrade-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    width: calc(33.333% - 1rem);
+    min-width: 220px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.upgrade-card:hover, .upgrade-card:focus {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: var(--accent-color);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+    outline: none;
+}
+
+.upgrade-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.upgrade-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.upgrade-card p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
 }
 
 .game-over-overlay {

@@ -1,5 +1,6 @@
 import { state } from '../core/state.js';
 import { player } from '../entities/player.js';
+import { triggerLevelUp } from './upgradeSystem.js';
 
 export function setupXPSystem() {
     console.log("XP System active.");
@@ -56,9 +57,12 @@ export function updateXPSystem() {
                 state.xp.required = Math.floor(state.xp.required * 1.5);
                 console.log(`LEVEL UP! Now level ${state.xp.level}`);
                 
-                // Add a visual flash for level up
+                // Add a visual flash and hit stop
                 state.effects.flash = 0.8;
                 state.effects.shake.intensity = 20;
+                
+                // Pause game and invoke UI
+                triggerLevelUp();
             }
         }
     }
