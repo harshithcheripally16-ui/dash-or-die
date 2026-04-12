@@ -1,4 +1,5 @@
 export const STATE = {
+    SPLASH: 'splash',
     START: 'start',
     PLAYING: 'playing',
     DYING: 'dying',
@@ -8,7 +9,7 @@ export const STATE = {
 };
 
 export const state = {
-    gameState: STATE.START,
+    gameState: STATE.SPLASH,
     settings: {
         color: '#8b5cf6',
         theme: 'dark'

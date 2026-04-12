@@ -177,7 +177,39 @@ body {
   align-items: center;
   z-index: 9999;
   animation: overlayFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: opacity 0.5s ease, backdrop-filter 0.5s ease;
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.splash-title {
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: white;
+  text-shadow: 
+    0 0 10px var(--accent-color),
+    0 0 20px var(--accent-color),
+    0 0 40px var(--accent-glow),
+    0 0 80px var(--accent-glow);
+  animation: 
+    splashFadeZoom 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    neonFlicker 0.1s infinite alternate;
+}
+
+@keyframes splashFadeZoom {
+  0% { opacity: 0; transform: scale(0.9); }
+  20% { opacity: 1; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes neonFlicker {
+  0% { opacity: 0.95; filter: brightness(1); }
+  100% { opacity: 1; filter: brightness(1.1); }
+}
+
+.fade-out {
+  opacity: 0 !important;
+  pointer-events: none;
+}
 }
 
 @keyframes overlayFadeIn {

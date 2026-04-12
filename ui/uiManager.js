@@ -14,15 +14,13 @@ export function showScreen(id) {
     }
 }
 
-export function hideScreens() {
-    const startScreen = document.getElementById('start-screen');
-    const gameOverScreen = document.getElementById('game-over');
-    const levelUpScreen = document.getElementById('levelup-screen');
     const pauseScreen = document.getElementById('pause-screen');
+    const splashScreen = document.getElementById('splash-screen');
     if (startScreen) startScreen.style.display = 'none';
     if (gameOverScreen) gameOverScreen.style.display = 'none';
     if (levelUpScreen) levelUpScreen.style.display = 'none';
     if (pauseScreen) pauseScreen.style.display = 'none';
+    if (splashScreen) splashScreen.style.display = 'none';
 }
 
 export function showLevelUpScreen(choices = []) {
@@ -195,6 +193,25 @@ export function setupStartMenu() {
             location.reload(); // Hard reset for menu restart or link to resetGame logic
         });
     }
+}
+
+/**
+ * Executes the cinematic splash sequence
+ */
+export function initSplashScreen() {
+    const splash = document.getElementById('splash-screen');
+    if (!splash) return;
+
+    // The animation duration is 3.5s in CSS
+    setTimeout(() => {
+        splash.classList.add('fade-out');
+        
+        setTimeout(() => {
+            splash.style.display = 'none';
+            state.gameState = STATE.START;
+            showScreen('start-screen');
+        }, 1000); // Wait for CSS transition
+    }, 3500);
 }
 
 export function updateHighScoreDisplay() {

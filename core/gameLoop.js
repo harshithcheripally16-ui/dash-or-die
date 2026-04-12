@@ -6,7 +6,7 @@ import { spawnEnemy, drawEnemies } from '../entities/enemy.js';
 import { updateEnemiesAndCollisions } from '../systems/collision.js';
 import { updateXPSystem, drawXpOrbs } from '../systems/xpSystem.js';
 import { updateFloatingTexts, drawFloatingTexts } from '../ui/textEffects.js';
-import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash, togglePause, setupStartMenu } from '../ui/uiManager.js';
+import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, updateHUD, drawDebugOverlay, drawCollisionFlash, togglePause, setupStartMenu, initSplashScreen } from '../ui/uiManager.js';
 
 let lastTime = 0;
 
@@ -14,7 +14,7 @@ export function init() {
     initCanvas();
     
     try {
-        showScreen('start-screen');
+        initSplashScreen();
         resizeCanvas();
         if (canvas) canvas.focus();
     } catch (e) {
@@ -110,9 +110,11 @@ export function resetGame() {
 
 function update() {
     const now = Date.now();
-    const dt = state.timeScale;
+    const gameDelta = state.timeScale;
     
     if (state.gameState === STATE.PAUSED) return;
+
+    if (state.gameState === STATE.SPLASH) return;
 
     if (state.gameState !== STATE.PLAYING && state.gameState !== STATE.DYING) {
         state.effects.shake.intensity *= 0.9;
@@ -181,10 +183,10 @@ function update() {
     updatePlayerMovement(now, moveDirX, moveDirY);
     updatePlayerEffects();
     
-    // Scale existing update systems by dt inside their logic or here
+    // Scale existing update systems by gameDelta inside their logic or here
     updateEnemiesAndCollisions(triggerGameOver);
     updateXPSystem();
-    updateFloatingTexts(0.016 * dt);
+    updateFloatingTexts(0.016 * gameDelta);
 
     if (state.gameState === STATE.PLAYING) state.score++;
     
