@@ -11,6 +11,8 @@ export const state = {
     spawnRate: 1500,
     minSpawnRate: 400,
     enemies: [],
+    orbs: [],
+    xp: { current: 0, required: 100, level: 1 },
     keys: {},
     touchState: {
         active: false,
@@ -26,7 +28,9 @@ export const state = {
 
 export function resetGameState() {
     state.enemies = [];
+    state.orbs = [];
     state.score = 0;
+    state.xp = { current: 0, required: 100, level: 1 };
     state.spawnRate = 1500;
     state.lastSpawnTime = Date.now();
     state.effects.flash = 0;

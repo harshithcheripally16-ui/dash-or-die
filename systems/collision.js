@@ -1,5 +1,6 @@
 import { state } from '../core/state.js';
 import { player, spawnDestructionParticles } from '../entities/player.js';
+import { spawnOrb } from './xpSystem.js';
 
 export function updateEnemiesAndCollisions(onGameOver) {
     let minEnemyDist = Infinity;
@@ -37,7 +38,12 @@ export function updateEnemiesAndCollisions(onGameOver) {
                 spawnDestructionParticles(enemy.x + enemy.size / 2, enemy.y + enemy.size / 2);
                 
                 // Safely remove the enemy
+                const ex = enemy.x + enemy.size / 2;
+                const ey = enemy.y + enemy.size / 2;
                 state.enemies.splice(i, 1);
+                
+                // Spawn XP orb at the center of the enemy
+                spawnOrb(ex, ey);
             } else {
                 // Defensive Hit (Game Over)
                 if (onGameOver) onGameOver();

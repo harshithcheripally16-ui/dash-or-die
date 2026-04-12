@@ -91,7 +91,7 @@ export function drawDebugOverlay(ctx) {
     ctx.font = '10px Inter';
     ctx.textAlign = 'right';
     if (canvas) {
-        ctx.fillText(`THR: ${state.enemies.length} | SYNC: ${Math.floor(state.score/10)} | STATE: ${state.gameState}`, canvas.width - 20, canvas.height - 20);
+        ctx.fillText(`THR: ${state.enemies.length} | SYNC: ${Math.floor(state.score/10)} | LVL: ${state.xp.level} | XP: ${state.xp.current}/${state.xp.required}`, canvas.width - 20, canvas.height - 20);
     }
 }
 

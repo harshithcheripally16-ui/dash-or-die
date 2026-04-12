@@ -4,7 +4,7 @@ import { setupInput } from './input.js';
 import { player, updatePlayerMovement, updatePlayerEffects, drawPlayer } from '../entities/player.js';
 import { spawnEnemy, drawEnemies } from '../entities/enemy.js';
 import { updateEnemiesAndCollisions } from '../systems/collision.js';
-import { updateXPSystem } from '../systems/xpSystem.js';
+import { updateXPSystem, drawXpOrbs } from '../systems/xpSystem.js';
 import { showScreen, hideScreens, updateInstructions, triggerGameOver, updateHighScoreDisplay, updateScoreDisplay, drawDebugOverlay, drawCollisionFlash } from '../ui/uiManager.js';
 
 let lastTime = 0;
@@ -147,6 +147,7 @@ function draw() {
     }
 
     drawGrid();
+    drawXpOrbs(ctx);
     drawPlayer();
     drawEnemies();
     
