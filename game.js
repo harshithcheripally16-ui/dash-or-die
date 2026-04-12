@@ -58,6 +58,7 @@ function init() {
     try {
         showScreen('start-screen');
         resizeCanvas();
+        if (canvas) canvas.focus();
     } catch (e) {
         console.error("Core initialization failed:", e);
     }
@@ -84,7 +85,9 @@ function init() {
 
     window.addEventListener('keydown', (e) => {
         try {
-            if ((gameState === STATE.START || gameState === STATE.GAMEOVER) && (e.code === 'Enter' || e.code === 'Space')) {
+            const isControlKey = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter'].includes(e.code);
+            
+            if ((gameState === STATE.START || gameState === STATE.GAMEOVER) && isControlKey) {
                 if (gameState === STATE.GAMEOVER) resetGame();
                 startGame();
                 return;
@@ -122,6 +125,10 @@ function setupTouchListeners() {
     const surgeBtn = document.getElementById('surge-btn');
 
     window.addEventListener('touchstart', (e) => {
+        if (gameState === STATE.START) {
+            startGame();
+            return;
+        }
         const touch = e.touches[0];
         // Only trigger joystick on the left half of the screen
         if (touch.clientX < window.innerWidth / 2) {
@@ -204,9 +211,6 @@ function showScreen(id) {
 function hideScreens() {
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
-    
-    const inst = document.getElementById('game-instructions');
-    if (inst) inst.innerHTML = 'Press <span class="accent">SPACE</span> or <span class="accent">ENTER</span> to INITIALIZE LINK';
 }
 
 function resetGame() {
