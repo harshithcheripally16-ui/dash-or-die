@@ -37,21 +37,20 @@
                         <span class="btn-glow"></span>
                         INITIALIZE LINK
                     </button>
+
+                    <button id="colors-btn" class="premium-btn btn-secondary">
+                        COLOR_SIGNATURES
+                    </button>
                     
                     <button id="quit-btn" class="btn-minimal">TERMINATE_PROCESS</button>
                 </div>
 
                 <!-- Right Panel: Utility Zone -->
                 <div class="menu-panel panel-right">
-                    <div class="menu-module module-custom">
-                        <p class="stat-label module-title">Core Signature</p>
-                        <div class="color-carousel">
-                            <div class="color-option selected" data-color="#8b5cf6" style="background: #8b5cf6;"></div>
-                            <div class="color-option" data-color="#67e8f9" style="background: #67e8f9;"></div>
-                            <div class="color-option" data-color="#2dd4bf" style="background: #2dd4bf;"></div>
-                            <div class="color-option" data-color="#a855f7" style="background: #a855f7;"></div>
-                            <div class="color-option" data-color="#fb923c" style="background: #fb923c;"></div>
-                        </div>
+                    <div class="branding">
+                        <p class="stat-label">Stability Index</p>
+                        <h2 class="stat-value" id="menu-high-score">0</h2>
+                        <p class="stat-label subtitle">Peak Performance Logged</p>
                     </div>
                     
                     <div class="menu-module module-settings">
@@ -63,8 +62,32 @@
                             </div>
                             <span class="theme-label">LIGHT</span>
                         </div>
+                </div>
+            </div>
+
+            <!-- Colors Side Popup -->
+            <div id="colors-popup" class="side-popup">
+                <div class="popup-header">
+                    <p class="stat-label">Signature Protocols</p>
+                    <h2 class="popup-title">COLOR_SIGNATURES</h2>
+                </div>
+                
+                <div class="color-grid" id="color-grid">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="color-details" id="color-details">
+                    <div class="details-preview">
+                        <div id="preview-icon"></div>
+                    </div>
+                    <div class="details-info">
+                        <h3 id="color-name">Classic Violet</h3>
+                        <p id="color-req" class="stat-label">UNLOCKED</p>
+                        <button id="unlock-btn" class="premium-btn btn-small">SELECT</button>
                     </div>
                 </div>
+
+                <button id="close-popup" class="btn-minimal">CLOSE</button>
             </div>
         </div>
 

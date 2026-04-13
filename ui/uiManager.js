@@ -178,17 +178,28 @@ export function setupStartMenu() {
         });
     }
 
-    // Color Carousel
-    const colorOptions = document.querySelectorAll('.color-option');
-    colorOptions.forEach(opt => {
-        opt.addEventListener('click', () => {
-            colorOptions.forEach(o => o.classList.remove('selected'));
-            opt.classList.add('selected');
-            const color = opt.getAttribute('data-color');
-            state.settings.color = color;
-            player.color = color; // Preview on player object for when game starts
+    // Colors Popup Trigger
+    const colorsBtn = document.getElementById('colors-btn');
+    if (colorsBtn) {
+        colorsBtn.addEventListener('click', () => {
+            setupColorsPopup();
+            document.getElementById('colors-popup').classList.add('active');
         });
-    });
+    }
+
+    const closePopup = document.getElementById('close-popup');
+    if (closePopup) {
+        closePopup.addEventListener('click', () => {
+            document.getElementById('colors-popup').classList.remove('active');
+        });
+    }
+
+    // High Score on Menu
+    const menuHighScore = document.getElementById('menu-high-score');
+    if (menuHighScore) {
+        const highScore = localStorage.getItem('dashHighScore') || 0;
+        menuHighScore.innerText = Math.floor(highScore / 10);
+    }
 
     // Quit Button
     const quitBtn = document.getElementById('quit-btn');
@@ -305,5 +316,79 @@ export function drawCollisionFlash(ctx) {
         ctx.restore();
         
         state.effects.flash *= 0.88;
+    }
+}
+
+/**
+ * Populates and manages the color unlock popup
+ */
+export function setupColorsPopup() {
+    const grid = document.getElementById('color-grid');
+    const nameLabel = document.getElementById('color-name');
+    const reqLabel = document.getElementById('color-req');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const previewIcon = document.getElementById('preview-icon');
+    
+    if (!grid) return;
+    
+    const highScore = localStorage.getItem('dashHighScore') || 0;
+    const scoreVal = Math.floor(highScore / 10);
+
+    grid.innerHTML = '';
+    
+    state.settings.colorCatalog.forEach(item => {
+        const isUnlocked = state.settings.unlockedColors.includes(item.hex) || scoreVal >= item.req;
+        
+        // Auto-unlock if requirement is met
+        if (scoreVal >= item.req && !state.settings.unlockedColors.includes(item.hex)) {
+            state.settings.unlockedColors.push(item.hex);
+        }
+
+        const div = document.createElement('div');
+        div.className = `color-item ${!isUnlocked ? 'locked' : ''} ${state.settings.color === item.hex ? 'selected' : ''}`;
+        div.style.backgroundColor = item.hex;
+        
+        if (!isUnlocked) {
+            div.innerHTML = '<span class="lock-icon">🔒</span>';
+        }
+
+        div.addEventListener('click', () => {
+            // Update Preview
+            previewIcon.style.backgroundColor = item.hex;
+            nameLabel.innerText = item.name.toUpperCase();
+            
+            if (isUnlocked) {
+                reqLabel.innerText = 'PROTOCOL_AUTHORIZED';
+                reqLabel.style.color = '#84cc16';
+                unlockBtn.innerText = 'INITIALIZE';
+                unlockBtn.disabled = false;
+                
+                unlockBtn.onclick = () => {
+                    state.settings.color = item.hex;
+                    player.color = item.hex;
+                    setupColorsPopup(); // Refresh grid
+                };
+            } else {
+                reqLabel.innerText = `SYNC_REQ: ${item.req}`;
+                reqLabel.style.color = '#ef4444';
+                unlockBtn.innerText = 'LOCKED';
+                unlockBtn.disabled = true;
+            }
+
+            // Update selected class in grid
+            document.querySelectorAll('.color-item').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+        });
+
+        grid.appendChild(div);
+    });
+
+    // Set initial preview based on current selection
+    const active = state.settings.colorCatalog.find(c => c.hex === state.settings.color);
+    if (active) {
+        previewIcon.style.backgroundColor = active.hex;
+        nameLabel.innerText = active.name.toUpperCase();
+        reqLabel.innerText = 'PROTOCOL_AUTHORIZED';
+        reqLabel.style.color = '#84cc16';
     }
 }

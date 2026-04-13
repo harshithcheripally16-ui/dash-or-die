@@ -13,7 +13,16 @@ export const state = {
     hasInitialSplashPlayed: false,
     settings: {
         color: '#8b5cf6',
-        theme: 'dark'
+        theme: 'dark',
+        unlockedColors: ['#8b5cf6'],
+        colorCatalog: [
+            { id: 'classic', hex: '#8b5cf6', name: 'Classic Violet', req: 0 },
+            { id: 'cyan', hex: '#67e8f9', name: 'Cyan Surge', req: 1000 },
+            { id: 'emerald', hex: '#2dd4bf', name: 'Emerald Edge', req: 5000 },
+            { id: 'purple', hex: '#a855f7', name: 'Royal Pulse', req: 10000 },
+            { id: 'orange', hex: '#fb923c', name: 'Solar Flare', req: 15000 },
+            { id: 'crimson', hex: '#ef4444', name: 'Crimson Crisis', req: 25000 }
+        ]
     },
     mousePos: { x: 0, y: 0 },
     timeScale: 1.0,
