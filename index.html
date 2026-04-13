@@ -54,14 +54,15 @@
                     </div>
                     
                     <div class="menu-module module-settings">
-                        <p class="stat-label module-title">Environment Theme</p>
+                        <p class="stat-label">Environment Protocol</p>
                         <div class="theme-switch-container">
                             <span class="theme-label">DARK</span>
-                            <div id="theme-toggle" class="theme-toggle-switch">
+                            <div id="theme-toggle" class="theme-toggle-switch" tabIndex="0">
                                 <div class="switch-handle"></div>
                             </div>
                             <span class="theme-label">LIGHT</span>
                         </div>
+                    </div>
                 </div>
             </div>
 
@@ -83,7 +84,7 @@
                     <div class="details-info">
                         <h3 id="color-name">Classic Violet</h3>
                         <p id="color-req" class="stat-label">UNLOCKED</p>
-                        <button id="unlock-btn" class="premium-btn btn-small">SELECT</button>
+                        <button id="color-proto-btn" class="premium-btn btn-small">INITIALIZE</button>
                     </div>
                 </div>
 
@@ -91,7 +92,8 @@
             </div>
         </div>
 
-        <div class="ui-overlay" style="display: none;">
+        <!-- In-Game HUD -->
+        <div id="game-hud" class="hud-container" style="display: none;">
             <div class="stat-module">
                 <p class="stat-label">System State</p>
                 <div class="stat-value">OPERATIONAL</div>
@@ -100,14 +102,13 @@
                 </div>
             </div>
 
-            <div class="stat-module" style="animation-delay: 0.1s;">
+            <div class="stat-module">
                 <p class="stat-label">Link Progression</p>
                 <div class="stat-value" id="hud-level">LVL: 1</div>
                 <div class="xp-container">
                     <div id="xp-bar"></div>
                 </div>
-                <p class="stat-label" id="hud-xp-text" style="margin-top: 0.5rem; font-size: 0.6rem;">XP: 0 / 100</p>
-            </div>
+                <p class="stat-label" id="hud-xp-text">XP: 0 / 100</p>
             </div>
         </div>
 

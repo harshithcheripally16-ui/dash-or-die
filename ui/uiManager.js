@@ -5,10 +5,10 @@ import { selectUpgrade } from '../systems/upgradeSystem.js';
 import { drawFloatingTexts } from './textEffects.js';
 
 export function showHUD() {
-    const overlays = ['.ui-overlay', '.score-module', '.pause-trigger', '#game-instructions'];
+    const overlays = ['#game-hud', '.score-module', '.pause-trigger', '#game-instructions'];
     overlays.forEach(selector => {
         const el = document.querySelector(selector);
-        if (el) el.style.display = 'block';
+        if (el) el.style.display = 'flex';
     });
 }
 
@@ -26,6 +26,15 @@ export function returnToMenu() {
     resetGameState();
     resetPlayer();
     hideScreens();
+    
+    // Hide HUD
+    const hud = document.getElementById('game-hud');
+    if (hud) hud.style.display = 'none';
+    const score = document.querySelector('.score-module');
+    if (score) score.style.display = 'none';
+    const pause = document.getElementById('pause-btn');
+    if (pause) pause.style.display = 'none';
+
     showScreen('start-screen');
     
     // Reset cinematic effects
@@ -326,7 +335,7 @@ export function setupColorsPopup() {
     const grid = document.getElementById('color-grid');
     const nameLabel = document.getElementById('color-name');
     const reqLabel = document.getElementById('color-req');
-    const unlockBtn = document.getElementById('unlock-btn');
+    const unlockBtn = document.getElementById('color-proto-btn');
     const previewIcon = document.getElementById('preview-icon');
     
     if (!grid) return;
