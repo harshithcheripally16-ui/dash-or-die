@@ -16,12 +16,25 @@ export const state = {
         theme: 'dark',
         unlockedColors: ['#8b5cf6'],
         colorCatalog: [
-            { id: 'classic', hex: '#8b5cf6', name: 'Classic Violet', req: 0 },
-            { id: 'cyan', hex: '#67e8f9', name: 'Cyan Surge', req: 1000 },
-            { id: 'emerald', hex: '#2dd4bf', name: 'Emerald Edge', req: 5000 },
-            { id: 'purple', hex: '#a855f7', name: 'Royal Pulse', req: 10000 },
-            { id: 'orange', hex: '#fb923c', name: 'Solar Flare', req: 15000 },
-            { id: 'crimson', hex: '#ef4444', name: 'Crimson Crisis', req: 25000 }
+            // 1. Default Colors (3)
+            { id: 'white', hex: '#ffffff', name: 'CORE_LIGHT', req: 0, category: 'DEFAULT', effect: 'none' },
+            { id: 'cyan_def', hex: '#22d3ee', name: 'CORE_CYAN', req: 0, category: 'DEFAULT', effect: 'none' },
+            { id: 'green_def', hex: '#4ade80', name: 'CORE_GREEN', req: 0, category: 'DEFAULT', effect: 'none' },
+            
+            // 2. Glowing Colors (5)
+            { id: 'neon_violet', hex: '#8b5cf6', name: 'NEON_VIOLET', req: 500, category: 'GLOWING', effect: 'pulse' },
+            { id: 'neon_pink', hex: '#ec4899', name: 'NEON_PINK', req: 1500, category: 'GLOWING', effect: 'pulse' },
+            { id: 'neon_amber', hex: '#f59e0b', name: 'NEON_GOLD', req: 3000, category: 'GLOWING', effect: 'pulse' },
+            { id: 'neon_emerald', hex: '#10b981', name: 'NEON_SHARP', req: 5000, category: 'GLOWING', effect: 'pulse' },
+            { id: 'neon_ice', hex: '#3b82f6', name: 'NEON_FROST', req: 7500, category: 'GLOWING', effect: 'pulse' },
+
+            // 3. Cosmic Colors (3)
+            { id: 'nebula', hex: '#a855f7', name: 'NEBULA_DRIFT', req: 15000, category: 'COSMIC', effect: 'cosmic' },
+            { id: 'supernova', hex: '#f87171', name: 'SUPERNOVA', req: 25000, category: 'COSMIC', effect: 'cosmic' },
+            { id: 'void_blue', hex: '#1d4ed8', name: 'VOID_DEPTH', req: 40000, category: 'COSMIC', effect: 'cosmic' },
+
+            // 4. Ultimate Color (1)
+            { id: 'singularity', hex: '#ffffff', name: 'SINGULARITY', req: 100000, category: 'ULTIMATE', effect: 'ultimate' }
         ]
     },
     mousePos: { x: 0, y: 0 },

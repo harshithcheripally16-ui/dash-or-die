@@ -29,35 +29,18 @@ export function init() {
         try { resizeCanvas(); } catch (e) { /* ignore */ }
     });
     
-    // UI Bindings
-    const startBtn = document.getElementById('start-btn');
-    const handleStart = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        startGame();
-    };
-    if (startBtn) {
-        startBtn.addEventListener('click', handleStart);
-        startBtn.addEventListener('touchstart', handleStart, { passive: false });
-    }
-    
-    const restartBtn = document.getElementById('restart-btn');
-    const handleRestart = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        resetGame();
-        startGame();
-    };
-    if (restartBtn) {
-        restartBtn.addEventListener('click', handleRestart);
-        restartBtn.addEventListener('touchstart', handleRestart, { passive: false });
-    }
-
     setupInput({
         onStart: startGame,
         onReset: resetGame,
         onPause: togglePause
     });
+
+    // Global Registry for UI Bindings
+    window.DASH_START = startGame;
+    window.DASH_RESTART = () => {
+        resetGame();
+        startGame();
+    };
 
     setupStartMenu();
     

@@ -284,6 +284,26 @@ export function drawPlayer() {
     ctx.save();
     ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
     ctx.rotate(player.angle);
+
+    const activeEffect = state.settings.activeEffect || 'none';
+    const time = Date.now() / 1000;
+    
+    // Dynamic Hue and Glow for premium effects
+    if (activeEffect === 'ultimate') {
+        ctx.filter = `hue-rotate(${time * 180}deg) brightness(1.2)`;
+        ctx.shadowBlur = 30 + Math.sin(time * 5) * 10;
+        ctx.shadowColor = '#fff';
+    } else if (activeEffect === 'cosmic') {
+        ctx.filter = `hue-rotate(${time * 45}deg)`;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = state.settings.color;
+    } else if (activeEffect === 'pulse') {
+        ctx.shadowBlur = 20 + Math.sin(time * 8) * 10;
+        ctx.shadowColor = state.settings.color;
+    } else {
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = state.settings.color;
+    }
     
     if (player.isDashing) {
         const speed = Math.hypot(player.dashVelocity.x, player.dashVelocity.y);
@@ -298,16 +318,15 @@ export function drawPlayer() {
         ctx.scale(stretch, 1 / stretch);
     }
 
-    ctx.shadowBlur = 25;
-    ctx.shadowColor = state.settings.color;
     ctx.fillStyle = state.settings.color;
     
     ctx.beginPath();
     ctx.roundRect(-player.size / 2, -player.size / 2, player.size, player.size, 8);
     ctx.fill();
     
+    // Core Highlight
     ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.beginPath();
     ctx.roundRect(-player.size / 2, -player.size / 2, player.size, player.size / 2.5, [8, 8, 0, 0]);
     ctx.fill();

@@ -8,7 +8,10 @@ export function showHUD() {
     const overlays = ['#game-hud', '.score-module', '.pause-trigger', '#game-instructions'];
     overlays.forEach(selector => {
         const el = document.querySelector(selector);
-        if (el) el.style.display = 'flex';
+        if (el) {
+            el.style.display = 'flex';
+            el.style.pointerEvents = 'auto'; // Re-enable for HUD
+        }
     });
 }
 
@@ -27,13 +30,19 @@ export function returnToMenu() {
     resetPlayer();
     hideScreens();
     
-    // Hide HUD
+    // Explicitly hide all in-game HUD elements
     const hud = document.getElementById('game-hud');
     if (hud) hud.style.display = 'none';
     const score = document.querySelector('.score-module');
     if (score) score.style.display = 'none';
-    const pause = document.getElementById('pause-btn');
-    if (pause) pause.style.display = 'none';
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.style.display = 'none';
+    const instructions = document.getElementById('game-instructions');
+    if (instructions) instructions.style.display = 'none';
+
+    // Close any open popups
+    const colorsPopup = document.getElementById('colors-popup');
+    if (colorsPopup) colorsPopup.classList.remove('active');
 
     showScreen('start-screen');
     
@@ -46,8 +55,14 @@ export function hideScreens() {
     const screens = ['start-screen', 'game-over', 'levelup-screen', 'pause-screen', 'splash-screen'];
     screens.forEach(id => {
         const s = document.getElementById(id);
-        if (s) s.style.display = 'none';
+        if (s) {
+            s.style.display = 'none';
+        }
     });
+    
+    // Globally hide state-specific buttons that should not persist across screens
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.style.display = 'none';
 }
 
 export function showLevelUpScreen(choices = []) {
@@ -169,6 +184,11 @@ export function togglePause() {
 export function resumeGame() {
     state.gameState = STATE.PLAYING;
     hideScreens();
+    
+    // Explicitly show pause button
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.style.display = 'flex';
+
     if (canvas) canvas.focus();
     
     // Ensure joystick is hidden if not active
@@ -176,7 +196,23 @@ export function resumeGame() {
     if (joystickBase && !state.touchState.active) joystickBase.style.display = 'none';
 }
 
+let listenersAttached = false;
 export function setupStartMenu() {
+    if (listenersAttached) return;
+    listenersAttached = true;
+
+    // Start Button
+    const startBtn = document.getElementById('start-btn');
+    if (startBtn) {
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Dispatch a custom event and let gameLoop handle it, 
+            // or just rely on state if we want to be decoupled.
+            // For now, we'll use a globally accessible start function if available
+            if (window.DASH_START) window.DASH_START();
+        });
+    }
+
     // Theme Toggle (Switch Style)
     const themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) {
@@ -229,11 +265,17 @@ export function setupStartMenu() {
 
     // Global Restart Buttons
     const restartBtn = document.getElementById('restart-btn');
-    if (restartBtn) restartBtn.addEventListener('click', returnToMenu);
+    if (restartBtn) {
+        restartBtn.addEventListener('click', () => {
+            if (window.DASH_RESTART) window.DASH_RESTART();
+        });
+    }
 
     const pauseRestartBtn = document.getElementById('pause-restart-btn');
     if (pauseRestartBtn) {
-        pauseRestartBtn.addEventListener('click', returnToMenu);
+        pauseRestartBtn.addEventListener('click', () => {
+            if (window.DASH_RESTART) window.DASH_RESTART();
+        });
     }
 }
 
@@ -345,59 +387,83 @@ export function setupColorsPopup() {
 
     grid.innerHTML = '';
     
-    state.settings.colorCatalog.forEach(item => {
-        const isUnlocked = state.settings.unlockedColors.includes(item.hex) || scoreVal >= item.req;
-        
-        // Auto-unlock if requirement is met
-        if (scoreVal >= item.req && !state.settings.unlockedColors.includes(item.hex)) {
-            state.settings.unlockedColors.push(item.hex);
-        }
+    // Group colors by category
+    const categories = ['DEFAULT', 'GLOWING', 'COSMIC', 'ULTIMATE'];
+    grid.innerHTML = '';
+    
+    categories.forEach(cat => {
+        const catItems = state.settings.colorCatalog.filter(c => c.category === cat);
+        if (catItems.length === 0) return;
 
-        const div = document.createElement('div');
-        div.className = `color-item ${!isUnlocked ? 'locked' : ''} ${state.settings.color === item.hex ? 'selected' : ''}`;
-        div.style.backgroundColor = item.hex;
-        
-        if (!isUnlocked) {
-            div.innerHTML = '<span class="lock-icon">🔒</span>';
-        }
+        // Add Category Header
+        const header = document.createElement('div');
+        header.className = 'grid-category-header';
+        header.innerText = cat;
+        grid.appendChild(header);
 
-        div.addEventListener('click', () => {
-            // Update Preview
-            previewIcon.style.backgroundColor = item.hex;
-            nameLabel.innerText = item.name.toUpperCase();
+        catItems.forEach(item => {
+            const isUnlocked = state.settings.unlockedColors.includes(item.hex) || scoreVal >= item.req;
             
-            if (isUnlocked) {
-                reqLabel.innerText = 'PROTOCOL_AUTHORIZED';
-                reqLabel.style.color = '#84cc16';
-                unlockBtn.innerText = 'INITIALIZE';
-                unlockBtn.disabled = false;
-                
-                unlockBtn.onclick = () => {
-                    state.settings.color = item.hex;
-                    player.color = item.hex;
-                    setupColorsPopup(); // Refresh grid
-                };
-            } else {
-                reqLabel.innerText = `SYNC_REQ: ${item.req}`;
-                reqLabel.style.color = '#ef4444';
-                unlockBtn.innerText = 'LOCKED';
-                unlockBtn.disabled = true;
+            if (scoreVal >= item.req && !state.settings.unlockedColors.includes(item.hex)) {
+                state.settings.unlockedColors.push(item.hex);
             }
 
-            // Update selected class in grid
-            document.querySelectorAll('.color-item').forEach(el => el.classList.remove('selected'));
-            div.classList.add('selected');
-        });
+            const div = document.createElement('div');
+            div.className = `color-item ${!isUnlocked ? 'locked' : ''} ${state.settings.color === item.hex ? 'selected' : ''}`;
+            div.style.backgroundColor = item.hex;
+            
+            if (item.effect === 'pulse') div.classList.add('effect-pulse');
+            if (item.effect === 'cosmic') div.classList.add('effect-cosmic');
+            if (item.effect === 'ultimate') div.classList.add('effect-ultimate');
 
-        grid.appendChild(div);
+            if (!isUnlocked) {
+                div.innerHTML = '<span class="lock-icon">🔒</span>';
+            }
+
+            div.addEventListener('click', () => {
+                previewIcon.style.backgroundColor = item.hex;
+                nameLabel.innerText = item.name.toUpperCase();
+                
+                // Clear previous effect classes
+                previewIcon.className = '';
+                if (item.effect !== 'none') previewIcon.classList.add(`effect-${item.effect}`);
+
+                if (isUnlocked) {
+                    reqLabel.innerText = 'PROTOCOL_AUTHORIZED';
+                    reqLabel.style.color = '#84cc16';
+                    unlockBtn.innerText = 'INITIALIZE';
+                    unlockBtn.disabled = false;
+                    
+                    unlockBtn.onclick = () => {
+                        state.settings.color = item.hex;
+                        player.color = item.hex;
+                        // For effect rendering, we can store it in settings too
+                        state.settings.activeEffect = item.effect;
+                        setupColorsPopup(); // Refresh grid
+                    };
+                } else {
+                    reqLabel.innerText = `SYNC_REQ: ${item.req}`;
+                    reqLabel.style.color = '#ef4444';
+                    unlockBtn.innerText = 'LOCKED';
+                    unlockBtn.disabled = true;
+                }
+
+                document.querySelectorAll('.color-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+            });
+
+            grid.appendChild(div);
+        });
     });
 
-    // Set initial preview based on current selection
+    // Initial Preview Sync
     const active = state.settings.colorCatalog.find(c => c.hex === state.settings.color);
     if (active) {
         previewIcon.style.backgroundColor = active.hex;
         nameLabel.innerText = active.name.toUpperCase();
         reqLabel.innerText = 'PROTOCOL_AUTHORIZED';
         reqLabel.style.color = '#84cc16';
+        previewIcon.className = '';
+        if (active.effect !== 'none') previewIcon.classList.add(`effect-${active.effect}`);
     }
 }

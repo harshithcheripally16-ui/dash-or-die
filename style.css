@@ -485,15 +485,36 @@ body {
   cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
   overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.grid-category-header {
+  grid-column: 1 / -1;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  color: var(--accent-color);
+  padding: 1.5rem 0 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.grid-category-header:first-child {
+  padding-top: 0;
 }
 
 .color-item.locked {
-  filter: grayscale(1) brightness(0.5);
+  filter: saturate(0.5) brightness(0.4);
+}
+
+.color-item.locked .lock-icon {
+  position: absolute;
+  font-size: 1rem;
+  z-index: 2;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .color-item.selected {
@@ -542,6 +563,38 @@ body {
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+}
+
+/* Color Effects */
+.effect-pulse {
+  animation: colorPulse 2s infinite alternate ease-in-out;
+}
+
+.effect-cosmic {
+  background: linear-gradient(45deg, var(--c1, #a855f7), var(--c2, #ec4899), var(--c1, #a855f7)) !important;
+  background-size: 200% 200% !important;
+  animation: cosmicDrift 4s infinite linear;
+}
+
+.effect-ultimate {
+  animation: ultimateGlow 1.5s infinite alternate ease-in-out, cosmicDrift 2s infinite linear;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4) !important;
+}
+
+@keyframes colorPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.1); filter: brightness(1.4) drop-shadow(0 0 10px currentColor); }
+}
+
+@keyframes cosmicDrift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes ultimateGlow {
+  0% { filter: brightness(1) hue-rotate(0deg); }
+  100% { filter: brightness(1.5) hue-rotate(360deg); }
 }
 
 @media (max-width: 900px) {
